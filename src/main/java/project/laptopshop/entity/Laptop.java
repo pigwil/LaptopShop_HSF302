@@ -62,6 +62,10 @@ public class Laptop {
     @OneToMany(mappedBy = "laptop", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
 
+    @NotBlank
+    @Column(name = "img_path", nullable = false, length = 1000)
+    private String imgPath;
+
     public enum LaptopStatus {
         Stock,
         Archived,

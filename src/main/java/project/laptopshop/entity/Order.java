@@ -43,7 +43,7 @@ public class Order {
     @Column(name = "order_status", length = 20, nullable = false)
     private Status orderStatus;
 
-    @Column(name = "payed", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "payed", nullable = false)
     private boolean payed;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

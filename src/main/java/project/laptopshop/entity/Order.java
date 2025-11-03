@@ -44,7 +44,10 @@ public class Order {
     private Status orderStatus;
 
     @Column(name = "payed", nullable = false)
-    private boolean payed;
+    private boolean payed = false;
+
+    @Column(name = "is_archived")
+    private int is_archived;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
@@ -52,6 +55,7 @@ public class Order {
     public enum Status {
         Draft,
         Confirmed,
-        Cancelled
+        Cancelled,
+        Delivered
     }
 }

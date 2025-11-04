@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ - Sony Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .navbar-menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #ee5a52;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 30px;
+        }
+
+        .welcome-banner {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-banner h2 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .welcome-banner p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .welcome-banner .user-greeting {
+            display: inline-block;
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-bottom: 40px;
+        }
+
+        .quick-actions h3 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .action-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-card .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .action-card h4 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .action-card p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .action-card.admin {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .action-card.admin h4,
+        .action-card.admin p {
+            color: white;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+        }
+
+        .stats-section h3 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .stat-item .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-item:hover .stat-number {
+            color: white;
+        }
+
+        .stat-item .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stat-item:hover .stat-label {
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .navbar-menu {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .navbar-menu a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .welcome-banner {
+                padding: 30px 20px;
+            }
+
+            .welcome-banner h2 {
+                font-size: 28px;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-brand">
+            <h1>🎮 Sony Store</h1>
+        </div>
+
+        <div class="navbar-menu">
+            <a href="/home">🏠 Trang chủ</a>
+            <a href="/products">🛍️ Sản phẩm</a>
+            <a href="/cart">🛒 Giỏ hàng</a>
+            <a href="/orders">📦 Đơn hàng</a>
+
+            <!-- Menu Admin (chỉ hiện khi role = ADMIN) -->
+            <a sec:authorize="hasAuthority('ADMIN')" href="/admin">⚙️ Quản trị</a>
+        </div>
+
+        <div class="navbar-user">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
+                </div>
+                <div>
+                    <div class="user-name" sec:authentication="name">Username</div>
+                    <div class="user-role" sec:authentication="principal.authorities">USER</div>
+                </div>
+            </div>
+
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="btn-logout">Đăng xuất</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="user-greeting">
+            👋 Xin chào, <span sec:authentication="name">User</span>!
+        </div>
+        <h2>Chào mừng đến với Sony Store</h2>
+        <p>Khám phá những sản phẩm công nghệ tuyệt vời từ Sony</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3>⚡ Truy cập nhanh</h3>
+        <div class="actions-grid">
+            <a href="/products" class="action-card">
+                <div class="icon">🛍️</div>
+                <h4>Mua sắm ngay</h4>
+                <p>Khám phá các sản phẩm mới nhất</p>
+            </a>
+
+            <a href="/cart" class="action-card">
+                <div class="icon">🛒</div>
+                <h4>Giỏ hàng</h4>
+                <p>Xem các sản phẩm đã chọn</p>
+            </a>
+
+            <a href="/orders" class="action-card">
+                <div class="icon">📦</div>
+                <h4>Đơn hàng của tôi</h4>
+                <p>Theo dõi tình trạng đơn hàng</p>
+            </a>
+
+            <a href="/account/change-password" class="action-card">
+                <div class="icon">🔐</div>
+                <h4>Đổi mật khẩu</h4>
+                <p>Bảo mật tài khoản của bạn</p>
+            </a>
+
+            <!-- Card Admin (chỉ hiện khi role = ADMIN) -->
+            <a sec:authorize="hasAuthority('ADMIN')" href="/admin" class="action-card admin">
+                <div class="icon">⚙️</div>
+                <h4>Quản trị hệ thống</h4>
+                <p>Quản lý sản phẩm, đơn hàng, người dùng</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <h3>📊 Thống kê</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">150+</div>
+                <div class="stat-label">Sản phẩm</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Danh mục</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Khách hàng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Hỗ trợ</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2025 <strong>Sony Store</strong> - Nền tảng mua sắm công nghệ hàng đầu</p>
+        <p>Phát triển bởi <a href="#">Your Team</a> | <a href="#">Chính sách</a> | <a href="#">Liên hệ</a></p>
+    </div>
+</div>
+</body>
+</html>

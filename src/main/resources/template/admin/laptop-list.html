@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">Quản lý Laptop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h1 th:text="${pageTitle}">Quản lý Laptop</h1>
+<a th:href="@{/admin/dashboard}">← Quay lại Dashboard</a>
+<a th:href="@{/admin/laptops/create}">+ Thêm Laptop mới</a>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Mã Laptop</th>
+        <th>Tên Laptop</th>
+        <th>Hãng</th>
+        <th>CPU</th>
+        <th>RAM</th>
+        <th>Giá</th>
+        <th>Trạng thái</th>
+        <th>Ảnh</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="laptop : ${laptops}">
+        <td th:text="${laptop.id}">1</td>
+        <td th:text="${laptop.laptopCode}">LP001</td>
+        <td th:text="${laptop.laptopName}">Laptop A</td>
+        <td th:text="${laptop.brand}">Brand X</td>
+        <td th:text="${laptop.cpuInfo}">i5</td>
+        <td th:text="${laptop.ramInfo}">8GB</td>
+        <td th:text="${laptop.price}">1000</td>
+        <td th:text="${laptop.laptopStatus}">Available</td>
+        <td>
+            <img th:src="@{/${laptop.imgPath}}" alt="Ảnh Laptop" width="100"/>
+        </td>
+        <td>
+            <a th:href="@{'/admin/laptops/edit/' + ${laptop.id}}">✏️ Sửa</a> |
+            <form th:action="@{'/admin/laptops/delete/' + ${laptop.id}}" method="post" style="display:inline;">
+                <button type="submit">🗑️ Xóa</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

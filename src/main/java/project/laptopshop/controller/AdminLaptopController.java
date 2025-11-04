@@ -1,7 +1,6 @@
 package project.laptopshop.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +13,16 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin/laptops")
+@RequiredArgsConstructor
 public class AdminLaptopController {
-    @Autowired
-    private LaptopService laptopService;
 
+    private final LaptopService laptopService;
+
+    @GetMapping("/admin/dashboard")
+    public String showDashboard() {
+        return "admin/dashboard"; // templates/admin/dashboard.html
+    }
+    
     @GetMapping
     public String getAllLaptops(Model model) {
         List<Laptop> laptops = laptopService.getAllLaptops();
@@ -31,14 +36,13 @@ public class AdminLaptopController {
         model.addAttribute("laptop", new Laptop());
         model.addAttribute("pageTitle", "Thêm Laptop mới");
         model.addAttribute("actionUrl", "/admin/laptops/save");
-        return "admin/laptop-form"; // => templates/admin/laptop-form.html
+        return "admin/laptop-form";
     }
 
     @PostMapping("/save")
-    public String createLaptop(
-            @ModelAttribute Laptop laptop,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile
-    ) throws IOException {
+    public String createLaptop(@ModelAttribute Laptop laptop,
+                               @RequestParam(value = "image", required = false) MultipartFile imageFile)
+            throws IOException {
         laptopService.createLaptop(laptop, imageFile);
         return "redirect:/admin/laptops";
     }
@@ -49,15 +53,14 @@ public class AdminLaptopController {
         model.addAttribute("laptop", laptop);
         model.addAttribute("pageTitle", "Chỉnh sửa Laptop");
         model.addAttribute("actionUrl", "/admin/laptops/update/" + id);
-        return "admin/laptop-form"; // Reuse cùng form với thêm mới
+        return "admin/laptop-form";
     }
 
     @PostMapping("/update/{id}")
-    public String updateLaptop(
-            @PathVariable Long id,
-            @ModelAttribute Laptop laptop,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile
-    ) throws IOException {
+    public String updateLaptop(@PathVariable Long id,
+                               @ModelAttribute Laptop laptop,
+                               @RequestParam(value = "image", required = false) MultipartFile imageFile)
+            throws IOException {
         laptopService.updateLaptop(id, laptop, imageFile);
         return "redirect:/admin/laptops";
     }
@@ -69,10 +72,8 @@ public class AdminLaptopController {
     }
 
     @PostMapping("/{id}/status")
-    public String updateStatus(
-            @PathVariable Long id,
-            @RequestParam Laptop.LaptopStatus status
-    ) {
+    public String updateStatus(@PathVariable Long id,
+                               @RequestParam Laptop.LaptopStatus status) {
         laptopService.updateLaptopStatus(id, status);
         return "redirect:/admin/laptops";
     }

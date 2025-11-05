@@ -18,7 +18,7 @@ import java.util.List;
 public class Laptop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @NotBlank
     @Size(max = 10)
@@ -66,8 +66,11 @@ public class Laptop {
     @Column(name = "img_path", nullable = false, length = 1000)
     private String imgPath;
 
+    @Column(name = "is_deleted")
+    private int is_deleted = 0;
+
     public enum LaptopStatus {
-        Stock,
+        Out_Of_Stock,
         Archived,
         Available
     }

@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import project.laptopshop.repository.UserRepository;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

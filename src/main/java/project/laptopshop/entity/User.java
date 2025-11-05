@@ -20,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;  // ✅ ĐỔI từ int → Long (chuẩn JPA)
+    private Long id;
 
     @NotBlank
     @Size(max = 10)

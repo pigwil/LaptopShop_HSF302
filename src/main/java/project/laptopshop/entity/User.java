@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @NotBlank
     @Size(max = 10)
@@ -48,13 +49,19 @@ public class User {
     private String username;
 
     @NotBlank
-    @Size(min = 8, max = 25)
-    @Column(name = "password", nullable = false, length = 25)
+    @Column(name = "password", nullable = false)  // ✅ BỎ length = 25 vì BCrypt cần > 60 ký tự
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
     private Role role;
+
+    // ✅ THÊM 2 FIELD NÀY để tracking thời gian
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
@@ -62,9 +69,25 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Laptop> laptops;
 
-    public enum Role {
-        Admin,
-        User
+    // ✅ THÊM Email field (cần cho đăng ký)
+    @Column(name = "email", unique = true)
+    private String email;
+
+    // ✅ AUTO SET created_at khi tạo mới
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
+    // ✅ AUTO UPDATE updated_at khi sửa
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    public enum Role {
+        ADMIN,
+        USER
+    }
 }

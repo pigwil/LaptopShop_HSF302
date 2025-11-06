@@ -12,7 +12,7 @@ import project.laptopshop.repository.UserRepository;
 import java.time.LocalDateTime;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class    UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;

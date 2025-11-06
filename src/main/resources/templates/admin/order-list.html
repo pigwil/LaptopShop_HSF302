@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html th:replace="~{admin/_layout :: layout(
+                        pageTitle=${pageTitle},
+                        content=~{::content}
+                      )}">
+
+<th:block th:fragment="content">
+
+    <style>
+        .filter-nav {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #333;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .filter-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .filter-btn.active {
+            color: white;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .filter-btn.active.confirmed { background-color: #007bff; border-color: #007bff; }
+        .filter-btn.active.delivered { background-color: #28a745; border-color: #28a745; }
+        .filter-btn.active.cancelled { background-color: #dc3545; border-color: #dc3545; }
+
+        .status-Draft { color: gray; font-weight: bold; }
+        .status-Confirmed { color: #007bff; font-weight: bold; }
+        .status-Delivered { color: #28a745; font-weight: bold; }
+        .status-Cancelled { color: #dc3545; font-weight: bold; }
+    </style>
+
+    <h1 th:text="${pageTitle}">Order Management</h1>
+
+    <div class="filter-nav">
+        <a th:href="@{/admin/orders(status='All')}" class="filter-btn"
+           th:classappend="${currentStatus == 'All' ? 'active' : ''}">
+            All
+        </a>
+
+        <a th:href="@{/admin/orders(status='Confirmed')}" class="filter-btn"
+           th:classappend="${currentStatus == 'Confirmed' ? 'active confirmed' : ''}">
+            Pending Confirmation (Confirmed)
+        </a>
+
+        <a th:href="@{/admin/orders(status='Delivered')}" class="filter-btn"
+           th:classappend="${currentStatus == 'Delivered' ? 'active delivered' : ''}">
+            Delivered
+        </a>
+
+        <a th:href="@{/admin/orders(status='Cancelled')}" class="filter-btn"
+           th:classappend="${currentStatus == 'Cancelled' ? 'active cancelled' : ''}">
+            Cancelled
+        </a>
+        <a th:href="@{/admin/orders(status='Return')}" class="filter-btn"
+           th:classappend="${currentStatus == 'Return' ? 'active delivered' : ''}">
+            Return
+        </a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer Information</th>
+            <th>Created Date</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Total Amount</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}" th:if="${order.is_archived == null or order.is_archived == 0}">
+            <td th:text="${order.id}">1</td>
+            <td>
+                <div th:if="${order.createdBy != null}">
+                    <strong th:text="${order.createdBy.fullName}"></strong>
+                    <br/>
+                    <span th:text="${order.createdBy.phone}"></span>
+                    <br/>
+                    <span th:text="${order.createdBy.address}"></span>
+                </div>
+                <div th:if="${order.createdBy == null}">
+                    <span>N/A</span>
+                </div>
+            </td>
+            <td th:text="${#temporals.format(order.createdDate, 'dd/MM/yyyy')}">01/01/2024</td>
+            <td>
+                <form th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}" method="post">
+                    <select name="status" onchange="this.form.submit()"
+                            style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                        <option th:each="st : ${T(project.laptopshop.entity.Order.Status).values()}"
+                                th:if="${st.name() != 'Draft'}"
+                                th:value="${st}"
+                                th:text="${st}"
+                                th:selected="${st == order.orderStatus}">
+                        </option>
+                    </select>
+                    <button type="submit" style="display: none;">Save</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{'/admin/orders/' + ${order.id} + '/update-payment'}" method="post">
+                    <select name="payed" onchange="this.form.submit()"
+                            style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;"
+                            th:styleappend="${order.payed ? 'color:green; border-color:green;' : 'color:red; border-color:red;'}">
+                        <option value="true" th:selected="${order.payed}" style="color:green;">
+                            Paid
+                        </option>
+                        <option value="false" th:selected="${!order.payed}" style="color:red;">
+                            Unpaid
+                        </option>
+                    </select>
+                    <button type="submit" style="display: none;">Save</button>
+                </form>
+            </td>
+            <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' ₫'}">25,000,000 ₫</td>
+            <td>
+                <a th:href="@{'/admin/orders/' + ${order.id}}">View Details</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(orders)}">
+            <td colspan="7" style="text-align:center; color:gray;">No orders found.</td>
+        </tr>
+        </tbody>
+    </table>
+
+</th:block>
+
+</html>

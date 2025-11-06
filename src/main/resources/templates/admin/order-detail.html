@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html th:replace="~{admin/_layout :: layout(
+                        pageTitle=${pageTitle},
+                        content=~{::content}
+                      )}">
+
+<th:block th:fragment="content">
+
+    <style>
+        .detail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .card h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #f2f2f2;
+            padding-bottom: 10px;
+        }
+        .product-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .product-table th, .product-table td { border: 1px solid #ddd; padding: 8px; }
+        .product-table th { background-color: #f2f2f2; }
+        .text-right { text-align: right; }
+
+        .status-form { margin-top: 20px; background-color: #f9f9f9; padding: 15px; border-radius: 8px; }
+        .status-form select, .status-form button { padding: 10px; font-size: 16px; }
+
+        .status-Draft { color: gray; font-weight: bold; }
+        .status-Confirmed { color: blue; font-weight: bold; }
+        .status-Delivered { color: green; font-weight: bold; }
+        .status-Cancelled { color: red; font-weight: bold; }
+
+        @media (max-width: 900px) {
+            .detail-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <h1 th:text="${pageTitle}">Order Details</h1>
+    <a th:href="@{/admin/orders}" style="margin-bottom: 20px; display: inline-block;">← Back to List</a>
+
+    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+
+    <div class="detail-container" style="margin-top: 20px;">
+        <div class="card">
+            <h3>Order Information</h3>
+            <p><strong>Order ID:</strong> <span th:text="${order.id}">1</span></p>
+            <p><strong>Order Date:</strong> <span th:text="${#temporals.format(order.createdDate, 'dd/MM/yyyy')}">01/01/2024</span></p>
+            <p><strong>Status:</strong>
+                <span th:text="${order.orderStatus}"
+                      th:classappend="${'status-' + order.orderStatus}">Confirmed</span>
+            </p>
+            <hr>
+            <h3>Customer Information</h3>
+            <p><strong>Placed by:</strong> <span th:text="${order.createdBy.fullName}">John Doe</span></p>
+            <p><strong>Email:</strong> <span th:text="${order.createdBy.email}">john@example.com</span></p>
+            <p><strong>Phone:</strong> <span th:text="${order.createdBy.phone}">0909090909</span></p>
+            <hr>
+            <h3>Shipping Information</h3>
+            <p><strong>Recipient:</strong> <span th:text="${order.shippingName}">Jane Doe</span></p>
+            <p><strong>Phone:</strong> <span th:text="${order.shippingPhone}">0808080808</span></p>
+            <p><strong>Address:</strong> <span th:text="${order.shippingAddress}">123 Main St, HCMC</span></p>
+        </div>
+
+        <div class="card">
+            <h3>Update Status</h3>
+            <form th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}" method="post" class="status-form">
+                <label for="status">Change status to:</label>
+                <select id="status" name="status">
+                    <option th:each="st : ${T(project.laptopshop.entity.Order.Status).values()}"
+                            th:if="${st.name() != 'Draft'}"
+                            th:value="${st}"
+                            th:text="${st}"
+                            th:selected="${st == order.orderStatus}">
+                    </option>
+                </select>
+                <button type="submit">Update</button>
+            </form>
+
+            <h3>Product Details</h3>
+            <table class="product-table">
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price (at purchase)</th>
+                    <th>Total Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="detail : ${order.orderDetails}">
+                    <td th:text="${detail.laptop.laptopName}">Laptop X</td>
+                    <td th:text="${detail.quantity}" class="text-right">1</td>
+                    <td th:text="${#numbers.formatDecimal(detail.unitPrice, 0, 'COMMA', 0, 'POINT') + ' ₫'}" class="text-right">10,000,000 ₫</td>
+                    <td th:text="${#numbers.formatDecimal(detail.getTotalPrice(), 0, 'COMMA', 0, 'POINT') + ' ₫'}" class="text-right">10,000,000 ₫</td>
+                </tr>
+                </tbody>
+            </table>
+            <h2 class="text-right" style="margin-top: 20px;">
+                Total Amount:
+                <span style="color: red;" th:text="${#numbers.formatDecimal(order.getTotalAmount(), 0, 'COMMA', 0, 'POINT') + ' ₫'}">10,000,000 ₫</span>
+            </h2>
+        </div>
+    </div>
+
+</th:block>
+
+</html>

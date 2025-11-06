@@ -34,11 +34,6 @@ public class Order {
     @Column(name = "created_date", nullable = false)
     private LocalDate createdDate = LocalDate.now();
 
-    @NotBlank
-    @Size(max = 20)
-    @Column(name = "order_type", length = 20, nullable = false)
-    private String orderType;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", length = 20, nullable = false)
     private Status orderStatus;
@@ -49,13 +44,34 @@ public class Order {
     @Column(name = "is_archived")
     private int is_archived;
 
+    @Column(name = "shipping_address")
+    private String shippingAddress;
+
+    @Column(name = "shipping_Phone")
+    private String shippingPhone;
+
+    @Column(name = "shipping_Name")
+    private String shippingName;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
+
+    @Transient
+    public double getTotalAmount() {
+        double total = 0.0;
+        if (this.orderDetails != null) {
+            for (OrderDetail detail : this.orderDetails) {
+                total += detail.getTotalPrice();
+            }
+        }
+        return total;
+    }
 
     public enum Status {
         Draft,
         Confirmed,
         Cancelled,
-        Delivered
+        Delivered,
+        Return,
     }
 }

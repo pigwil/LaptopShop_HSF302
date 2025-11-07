@@ -1,6 +1,5 @@
 package project.laptopshop.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,13 +12,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class LaptopServiceImpl implements LaptopService {
 
     private final LaptopRepository laptopRepository;
+    private final String uploadDir;
 
-    @Value("${upload.path:laptop-images}")
-    private String uploadDir;
+    public LaptopServiceImpl(LaptopRepository laptopRepository, @Value("${upload.path:laptop-images}") String uploadDir) {
+        this.laptopRepository = laptopRepository;
+        this.uploadDir = uploadDir;
+    }
 
     @Override
     public List<Laptop> getAllLaptops() {
@@ -28,16 +29,14 @@ public class LaptopServiceImpl implements LaptopService {
 
     @Override
     public Laptop getLaptopById(Long id) {
-        Laptop laptop = laptopRepository.findByIdAndIs_deleted(id, 0);
-        if (laptop == null) throw new RuntimeException("Laptop không tồn tại: " + id);
-        return laptop;
+        return laptopRepository.findByIdAndIs_deleted(id, 0)
+                .orElseThrow(() -> new RuntimeException("Laptop không tồn tại: " + id));
     }
 
     @Override
     public Laptop getLaptopByCode(String laptopCode) {
-        Laptop laptop = laptopRepository.findActiveByLaptopCode(laptopCode);
-        if (laptop == null) throw new RuntimeException("Laptop không tồn tại: " + laptopCode);
-        return laptop;
+        return laptopRepository.findActiveByLaptopCode(laptopCode)
+                .orElseThrow(() -> new RuntimeException("Laptop không tồn tại: " + laptopCode));
     }
 
     @Override
@@ -46,51 +45,55 @@ public class LaptopServiceImpl implements LaptopService {
             throw new RuntimeException("Mã laptop đã tồn tại!");
         }
         if (imageFile != null && !imageFile.isEmpty()) {
-            laptop.setImgPath(saveImageFile(imageFile));
+            laptop.setImgPath(saveImageFile(imageFile)); // Sửa từ setImage thành setImgPath
+        } else {
+            laptop.setImgPath("/images/default-laptop.png"); // Đặt ảnh mặc định nếu không có ảnh được tải lên
         }
         laptop.setLaptopStatus(Laptop.LaptopStatus.Available);
+        // Đảm bảo trường is_deleted được thiết lập khi tạo mới
         laptop.setIs_deleted(0);
         return laptopRepository.save(laptop);
     }
 
     @Override
     public Laptop updateLaptop(Long id, Laptop updatedLaptop, MultipartFile imageFile) throws IOException {
-        Laptop laptop = laptopRepository.findByIdAndIs_deleted(id, 0);
-        if (laptop == null) throw new RuntimeException("Laptop không tồn tại: " + id);
+        Laptop laptop = getLaptopById(id);
 
-        laptop.setLaptopName(updatedLaptop.getLaptopName());
+        laptop.setLaptopName(updatedLaptop.getLaptopName()); // Sửa từ setName thành setLaptopName
         laptop.setBrand(updatedLaptop.getBrand());
-        laptop.setCpuInfo(updatedLaptop.getCpuInfo());
-        laptop.setRamInfo(updatedLaptop.getRamInfo());
+        laptop.setCpuInfo(updatedLaptop.getCpuInfo()); // Sửa từ setSpecs thành setCpuInfo
+        laptop.setRamInfo(updatedLaptop.getRamInfo()); // Thêm setRamInfo
         laptop.setPrice(updatedLaptop.getPrice());
+        // Loại bỏ setOldPrice vì không có trường này trong entity
         laptop.setLaptopStatus(updatedLaptop.getLaptopStatus());
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            laptop.setImgPath(saveImageFile(imageFile));
+            laptop.setImgPath(saveImageFile(imageFile)); // Sửa từ setImage thành setImgPath
         }
+        // Giữ nguyên ảnh cũ nếu không có ảnh mới được tải lên
 
         return laptopRepository.save(laptop);
     }
 
     @Override
     public void softDeleteLaptop(Long id) {
-        Laptop laptop = laptopRepository.findByIdAndIs_deleted(id, 0);
-        if (laptop == null) throw new RuntimeException("Laptop không tồn tại: " + id);
-        laptop.setIs_deleted(1);
+        Laptop laptop = getLaptopById(id);
+        laptop.setIs_deleted(1); // Cập nhật trường is_deleted
         laptopRepository.save(laptop);
     }
 
     @Override
     public void updateLaptopStatus(Long id, Laptop.LaptopStatus status) {
-        Laptop laptop = laptopRepository.findByIdAndIs_deleted(id, 0);
-        if (laptop == null) throw new RuntimeException("Laptop không tồn tại: " + id);
+        Laptop laptop = getLaptopById(id);
         laptop.setLaptopStatus(status);
         laptopRepository.save(laptop);
     }
 
     private String saveImageFile(MultipartFile file) throws IOException {
         File dir = new File(uploadDir);
-        if (!dir.exists() && !dir.mkdirs()) throw new IOException("Không thể tạo thư mục: " + uploadDir);
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IOException("Không thể tạo thư mục: " + uploadDir);
+        }
 
         String originalName = file.getOriginalFilename();
         String extension = (originalName != null && originalName.contains("."))
@@ -100,6 +103,6 @@ public class LaptopServiceImpl implements LaptopService {
         File dest = new File(dir, fileName);
         file.transferTo(dest);
 
-        return uploadDir + "/" + fileName;
+        return "/" + uploadDir + "/" + fileName; // Trả về đường dẫn tương đối để dùng trong HTML
     }
 }

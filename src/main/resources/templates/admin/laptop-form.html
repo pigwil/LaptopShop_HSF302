@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+
+<div th:replace="~{admin/_layout :: layout(title=${pageTitle}, content=~{::.content-wrapper}, activePage='laptops')}">
+
+    <div class="content-wrapper">
+        <style>
+            .form-container { background-color: #fff; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 800px; margin: 0 auto; }
+            .form-group { margin-bottom: 1.5rem; }
+            .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-color); }
+            .form-group input[type="text"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 1rem; }
+            .form-group input[type="file"] { padding: 0.5rem 0; }
+            .form-group textarea { resize: vertical; min-height: 100px; }
+            .form-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
+            .btn-submit { background-color: var(--primary-color); color: #fff; padding: 0.8rem 1.5rem; border-radius: var(--border-radius); border: none; cursor: pointer; font-size: 1rem; font-weight: 600; }
+            .btn-cancel { background-color: var(--secondary-color); color: #fff; padding: 0.8rem 1.5rem; border-radius: var(--border-radius); border: none; cursor: pointer; font-size: 1rem; font-weight: 600; }
+            .error-message { color: var(--danger-color); font-size: 0.85rem; margin-top: 0.5rem; display: block; }
+            .current-image { max-width: 150px; height: auto; margin-top: 1rem; border: 1px solid var(--border-color); padding: 5px; border-radius: var(--border-radius); }
+        </style>
+
+        <div class="form-container">
+            <form th:action="${actionUrl}" method="post" th:object="${laptop}" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{id}" th:if="*{id != null}">
+
+                <div class="form-group">
+                    <label for="laptopCode">Mã Laptop *</label>
+                    <input type="text" id="laptopCode" th:field="*{laptopCode}" required>
+                    <span class="error-message" th:if="${#fields.hasErrors('laptopCode')}" th:errors="*{laptopCode}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="laptopName">Tên Laptop *</label>
+                    <input type="text" id="laptopName" th:field="*{laptopName}" required>
+                    <span class="error-message" th:if="${#fields.hasErrors('laptopName')}" th:errors="*{laptopName}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="brand">Thương hiệu *</label>
+                    <input type="text" id="brand" th:field="*{brand}" required>
+                    <span class="error-message" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpuInfo">Thông tin CPU</label>
+                    <input type="text" id="cpuInfo" th:field="*{cpuInfo}">
+                </div>
+
+                <div class="form-group">
+                    <label for="ramInfo">Thông tin RAM</label>
+                    <input type="text" id="ramInfo" th:field="*{ramInfo}">
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Giá *</label>
+                    <input type="number" id="price" th:field="*{price}" min="0" step="any" required>
+                    <span class="error-message" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantityInStock">Số lượng tồn kho *</label>
+                    <input type="number" id="quantityInStock" th:field="*{quantityInStock}" min="0" required>
+                    <span class="error-message" th:if="${#fields.hasErrors('quantityInStock')}" th:errors="*{quantityInStock}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="laptopStatus">Trạng thái *</label>
+                    <select id="laptopStatus" th:field="*{laptopStatus}" required>
+                        <option th:each="status : ${T(project.laptopshop.entity.Laptop.LaptopStatus).values()}" th:value="${status}" th:text="${status}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageFile">Ảnh sản phẩm</label>
+                    <input type="file" id="imageFile" name="imageFile" accept="image/*">
+                    <img th:if="*{imgPath != null}" th:src="*{imgPath}" alt="Current Image" class="current-image">
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/admin/laptops}" class="btn-cancel">Hủy</a>
+                    <button type="submit" class="btn-submit">Lưu</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

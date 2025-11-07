@@ -1,72 +1,61 @@
 package project.laptopshop.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.callback.EntityCallback;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.laptopshop.dto.ChangePasswordDTO;
+import project.laptopshop.dto.LoginDTO;
 import project.laptopshop.dto.RegisterDTO;
 import project.laptopshop.entity.User;
 import project.laptopshop.repository.UserRepository;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class    UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private EntityCallback entityCallback;
-
-    @Override
-    public User register(RegisterDTO dto) throws Exception {
-        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
-            throw new Exception("Mật khẩu xác nhận không khớp");
-        }
-
-        if (userRepository.existsByUsername(dto.getUsername())) {
-            throw new Exception("Username đã tồn tại");
-        }
-
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new Exception("Email đã tồn tại");
-        }
-
-        User user = new User();
-        String userCode = "USER" + String.format("%06d", userRepository.count() + 1);
-        user.setUserCode(userCode);
-        user.setFullName(dto.getUsername());
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole(User.Role.USER);
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-
-        return userRepository.save(user);
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public void changePassword(Long userId, ChangePasswordDTO dto) throws Exception {
-        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
-            throw new Exception("Mật khẩu mới xác nhận không khớp");
+    public void register(RegisterDTO registerDTO) {
+        if (!registerDTO.getPassword().equals(registerDTO.getConfirmPassword())) {
+            throw new RuntimeException("Mật khẩu xác nhận không khớp");
+        }
+        if (userRepository.existsByUsername(registerDTO.getUsername())) {
+            throw new RuntimeException("Tên đăng nhập đã tồn tại");
+        }
+        if (userRepository.existsByEmail(registerDTO.getEmail())) {
+            throw new RuntimeException("Email đã tồn tại");
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new Exception("Không tìm thấy tài khoản"));
+        User user = new User();
+        // Đảm bảo lấy đúng fullName từ DTO
+        user.setFullName(registerDTO.getFullName()); 
+        user.setUsername(registerDTO.getUsername());
+        user.setEmail(registerDTO.getEmail());
+        user.setPassword(registerDTO.getPassword());
+        user.setRole(User.Role.USER);
 
-        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
-            throw new Exception("Mật khẩu cũ không đúng");
-        }
-
-        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-        user.setUpdatedAt(LocalDateTime.now());
+        // Logic tạo userCode nhất quán
+        long count = userRepository.count();
+        String userCode = "USER" + String.format("%06d", count + 1);
+        user.setUserCode(userCode);
 
         userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> login(LoginDTO loginDTO) {
+        Optional<User> userOptional = userRepository.findByUsername(loginDTO.getUsername());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (loginDTO.getPassword().equals(user.getPassword())) {
+                return userOptional;
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -75,7 +64,19 @@ public class    UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public void changePassword(Long userId, ChangePasswordDTO dto) {
+        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+            throw new RuntimeException("Mật khẩu mới xác nhận không khớp");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+
+        if (!dto.getOldPassword().equals(user.getPassword())) {
+            throw new RuntimeException("Mật khẩu cũ không đúng");
+        }
+
+        user.setPassword(dto.getNewPassword());
+        userRepository.save(user);
     }
 }

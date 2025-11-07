@@ -1,6 +1,7 @@
 package project.laptopshop.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -51,12 +52,12 @@ public class Laptop {
     @Column(name = "price", nullable = false)
     private double price;
 
+    @Min(0)
+    @Column(name = "quantity_in_stock", nullable = false)
+    private int quantityInStock; // <-- ĐÃ THÊM TRƯỜNG NÀY
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_code",
-            referencedColumnName = "user_code",
-            nullable = false
-    )
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "laptop", cascade = CascadeType.ALL, orphanRemoval = true)

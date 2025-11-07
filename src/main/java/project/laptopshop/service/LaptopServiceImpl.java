@@ -45,12 +45,15 @@ public class LaptopServiceImpl implements LaptopService {
             throw new RuntimeException("Mã laptop đã tồn tại!");
         }
         if (imageFile != null && !imageFile.isEmpty()) {
-            laptop.setImgPath(saveImageFile(imageFile)); // Sửa từ setImage thành setImgPath
+            laptop.setImgPath(saveImageFile(imageFile));
         } else {
-            laptop.setImgPath("/images/default-laptop.png"); // Đặt ảnh mặc định nếu không có ảnh được tải lên
+            laptop.setImgPath("/images/default-laptop.png");
         }
-        laptop.setLaptopStatus(Laptop.LaptopStatus.Available);
-        // Đảm bảo trường is_deleted được thiết lập khi tạo mới
+        if (laptop.getQuantityInStock() > 0) {
+            laptop.setLaptopStatus(Laptop.LaptopStatus.Available);
+        } else {
+            laptop.setLaptopStatus(Laptop.LaptopStatus.Out_Of_Stock);
+        }
         laptop.setIs_deleted(0);
         return laptopRepository.save(laptop);
     }
@@ -59,18 +62,22 @@ public class LaptopServiceImpl implements LaptopService {
     public Laptop updateLaptop(Long id, Laptop updatedLaptop, MultipartFile imageFile) throws IOException {
         Laptop laptop = getLaptopById(id);
 
-        laptop.setLaptopName(updatedLaptop.getLaptopName()); // Sửa từ setName thành setLaptopName
+        laptop.setLaptopName(updatedLaptop.getLaptopName());
         laptop.setBrand(updatedLaptop.getBrand());
-        laptop.setCpuInfo(updatedLaptop.getCpuInfo()); // Sửa từ setSpecs thành setCpuInfo
-        laptop.setRamInfo(updatedLaptop.getRamInfo()); // Thêm setRamInfo
+        laptop.setCpuInfo(updatedLaptop.getCpuInfo());
+        laptop.setRamInfo(updatedLaptop.getRamInfo());
         laptop.setPrice(updatedLaptop.getPrice());
-        // Loại bỏ setOldPrice vì không có trường này trong entity
-        laptop.setLaptopStatus(updatedLaptop.getLaptopStatus());
+        laptop.setQuantityInStock(updatedLaptop.getQuantityInStock());
+
+        if (updatedLaptop.getQuantityInStock() > 0) {
+            laptop.setLaptopStatus(Laptop.LaptopStatus.Available);
+        } else {
+            laptop.setLaptopStatus(Laptop.LaptopStatus.Out_Of_Stock);
+        }
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            laptop.setImgPath(saveImageFile(imageFile)); // Sửa từ setImage thành setImgPath
+            laptop.setImgPath(saveImageFile(imageFile));
         }
-        // Giữ nguyên ảnh cũ nếu không có ảnh mới được tải lên
 
         return laptopRepository.save(laptop);
     }
@@ -78,7 +85,7 @@ public class LaptopServiceImpl implements LaptopService {
     @Override
     public void softDeleteLaptop(Long id) {
         Laptop laptop = getLaptopById(id);
-        laptop.setIs_deleted(1); // Cập nhật trường is_deleted
+        laptop.setIs_deleted(1);
         laptopRepository.save(laptop);
     }
 
@@ -103,6 +110,6 @@ public class LaptopServiceImpl implements LaptopService {
         File dest = new File(dir, fileName);
         file.transferTo(dest);
 
-        return "/" + uploadDir + "/" + fileName; // Trả về đường dẫn tương đối để dùng trong HTML
+        return "/" + uploadDir + "/" + fileName;
     }
 }

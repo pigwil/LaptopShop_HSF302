@@ -11,6 +11,8 @@ import java.util.Optional;
 @Repository
 public interface LaptopRepository extends JpaRepository<Laptop, Long> {
 
+    Laptop findByLaptopCode(String laptopCode);
+
     @Query("SELECT l FROM Laptop l WHERE l.is_deleted = 0")
     List<Laptop> findAllActive();
 

@@ -13,9 +13,11 @@ import project.laptopshop.dto.LoginDTO;
 import project.laptopshop.dto.RegisterDTO;
 import project.laptopshop.entity.User;
 import project.laptopshop.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
+@Slf4j
 @Controller
 public class AuthController {
 
@@ -41,11 +43,15 @@ public class AuthController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             session.setAttribute("user", user);
+            log.info("AuthController: User {} logged in. Role: {}", user.getUsername(), user.getRole());
             if (user.getRole() == User.Role.ADMIN) {
+                log.info("AuthController: Redirecting ADMIN to /admin/dashboard");
                 return "redirect:/admin/dashboard";
             }
+            log.info("AuthController: Redirecting USER to /");
             return "redirect:/";
         } else {
+            log.warn("AuthController: Login failed for username: {}", loginDTO.getUsername());
             redirectAttributes.addFlashAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng");
             return "redirect:/login";
         }

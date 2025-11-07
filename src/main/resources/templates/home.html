@@ -272,16 +272,16 @@
             <a th:href="@{/}" class="logo">TechWorld</a>
             <div class="header-actions">
                 <!-- Nếu chưa đăng nhập -->
-                <div th:if="${session.user == null}">
+                <div th:if="${user == null}">
                     <a href="/login" class="action-btn login">Đăng nhập</a>
                     <a href="/register" class="action-btn register">Đăng ký</a>
                 </div>
 
                 <!-- Nếu đã đăng nhập -->
-                <div th:if="${session.user != null}" class="user-welcome">
-                    <span>Xin chào, <strong th:text="${session.user.fullName}">User</strong></span>
+                <div th:if="${user != null}" class="user-welcome">
+                    <span>Xin chào, <strong th:text="${user.fullName}">User</strong></span>
                     <a href="/cart" class="action-btn">🛒 Giỏ hàng</a>
-                    <a th:if="${session.user.role == T(project.laptopshop.entity.User.Role).ADMIN}" href="/admin/dashboard" class="action-btn register">Dashboard</a>
+                    <a th:if="${user.role == T(project.laptopshop.entity.User.Role).ADMIN}" href="/admin/dashboard" class="action-btn register">Dashboard</a>
                     <a href="/logout" class="action-btn logout">Đăng xuất</a>
                 </div>
             </div>

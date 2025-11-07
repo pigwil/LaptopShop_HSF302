@@ -1,7 +1,7 @@
 package project.laptopshop.service;
 
 import org.springframework.stereotype.Service;
-import project.laptopshop.dto.ChangePasswordDTO; // <-- Đã thêm dòng này
+import project.laptopshop.dto.ChangePasswordDTO;
 import project.laptopshop.dto.LoginDTO;
 import project.laptopshop.dto.RegisterDTO;
 import project.laptopshop.entity.User;
@@ -31,14 +31,16 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User();
-        user.setFullName(registerDTO.getFullName());
+        // Đảm bảo lấy đúng fullName từ DTO
+        user.setFullName(registerDTO.getFullName()); 
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
         user.setPassword(registerDTO.getPassword());
-        user.setRole(User.Role.USER); // Mặc định là USER
+        user.setRole(User.Role.USER);
 
-        // Tự động tạo userCode
-        String userCode = "USER" + String.format("%06d", userRepository.count() + 1);
+        // Logic tạo userCode nhất quán
+        long count = userRepository.count();
+        String userCode = "USER" + String.format("%06d", count + 1);
         user.setUserCode(userCode);
 
         userRepository.save(user);

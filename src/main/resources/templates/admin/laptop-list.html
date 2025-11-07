@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+
+<div th:replace="~{admin/_layout :: layout(title='Quản lý Sản phẩm', content=~{::.content-wrapper}, activePage='laptops')}">
+
+    <div class="content-wrapper">
+        <style>
+            .table-wrapper { background-color: #fff; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
+            .table { width: 100%; border-collapse: collapse; }
+            .table th, .table td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+            .table th { font-weight: 600; background-color: #f9fafb; }
+            .table img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+            .action-buttons a, .action-buttons button { margin-right: 0.5rem; padding: 0.4rem 0.8rem; border-radius: 4px; text-decoration: none; border: none; cursor: pointer; font-size: 0.85rem; }
+            .btn-edit { background-color: #fbbf24; color: #fff; }
+            .btn-delete { background-color: #ef4444; color: #fff; }
+            .btn-create { background-color: var(--primary-color); color: #fff; padding: 0.7rem 1.2rem; border-radius: var(--border-radius); text-decoration: none; display: inline-block; margin-bottom: 1.5rem; }
+        </style>
+
+        <a th:href="@{/admin/laptops/create}" class="btn-create">+ Thêm sản phẩm mới</a>
+
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Tên Laptop</th>
+                        <th>Thương hiệu</th>
+                        <th>Giá</th>
+                        <th>Tồn kho</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="laptop : ${laptops}">
+                        <td><img th:src="${laptop.imgPath}" th:alt="${laptop.laptopName}"></td>
+                        <td th:text="${laptop.laptopName}">Dell XPS 13</td>
+                        <td th:text="${laptop.brand}">Dell</td>
+                        <td th:text="${#numbers.formatDecimal(laptop.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25.000.000 ₫</td>
+                        <td th:text="${laptop.quantityInStock}">10</td>
+                        <td th:text="${laptop.laptopStatus}">Available</td>
+                        <td class="action-buttons">
+                            <a th:href="@{/admin/laptops/edit/{id}(id=${laptop.id})}" class="btn-edit">Sửa</a>
+                            <form th:action="@{/admin/laptops/delete/{id}(id=${laptop.id})}" method="post" style="display: inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">
+                                <button type="submit" class="btn-delete">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

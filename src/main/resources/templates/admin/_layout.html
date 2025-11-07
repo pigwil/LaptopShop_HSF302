@@ -1,175 +1,236 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi"
+      th:fragment="layout(pageTitle, content)">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} + ' - TechAdmin'">Admin Dashboard</title>
+    <title th:text="${pageTitle} ?: 'TechWorld Admin'">TechWorld Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Đặt CSS vào file riêng (khuyên dùng), hoặc giữ inline như bạn đang có -->
     <style>
         :root {
-            --primary-color: #4338ca;
-            --primary-color-light: #e0e7ff;
-            --primary-color-dark: #3730a3;
-            --sidebar-bg: #111827;
-            --sidebar-text: #9ca3af;
-            --sidebar-text-hover: #ffffff;
-            --sidebar-active-bg: #1f2937;
-            --content-bg: #f9fafb;
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #212529;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --body-bg: #f4f6f9;
             --card-bg: #ffffff;
-            --text-color: #374151;
-            --text-light: #6b7280;
-            --border-color: #e5e7eb;
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            background-color: var(--content-bg);
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
             color: var(--text-color);
+            background-color: var(--body-bg);
         }
 
-        .admin-panel {
-            display: flex;
-            min-height: 100vh;
-        }
+        .admin-wrapper { display: flex; min-height: 100vh; }
 
         /* Sidebar */
-        .sidebar {
+        .admin-sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            transition: width 0.3s ease;
+            color: #fff;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
         .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #fff;
-            border-bottom: 1px solid #374151;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            flex-grow: 1;
-            margin-top: 1rem;
-        }
-
-        .sidebar-nav li a {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            margin: 0.25rem 0.5rem;
-            text-decoration: none;
-            color: var(--sidebar-text);
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-nav li a:hover {
-            background-color: #374151;
-            color: var(--sidebar-text-hover);
-        }
-
-        .sidebar-nav li a.active {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        .sidebar-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #374151;
-        }
-        .sidebar-footer a {
-            color: var(--sidebar-text);
+            color: var(--primary-color);
             text-decoration: none;
             display: block;
-            text-align: center;
         }
 
-        /* Main Content */
-        .main-content-wrapper {
-            flex-grow: 1;
+        .sidebar-subtitle { font-size: 0.85rem; color: #bbb; margin-top: 0.25rem; }
+        .sidebar-menu { padding: 1rem 0; }
+        .menu-section { margin-bottom: 1.5rem; }
+        .menu-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #95a5a6;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: var(--sidebar-hover);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item.active {
+            background-color: var(--sidebar-hover);
+            border-left-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .menu-item .icon { margin-right: 0.75rem; font-size: 1.2rem; }
+
+        /* Main Layout */
+        .admin-main {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        .main-header {
-            background-color: var(--card-bg);
+        /* Header */
+        .admin-header {
+            background-color: #fff;
+            box-shadow: var(--box-shadow);
             padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        .page-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--text-color);
-            font-weight: 500;
-        }
-        .user-menu a {
-            color: var(--primary-color);
-            text-decoration: none;
+            position: sticky;
+            top: 0;
+            z-index: 999;
         }
 
-        .page-content {
-            padding: 2rem;
-            flex-grow: 1;
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
         }
+
+        .header-right { display: flex; align-items: center; gap: 1.5rem; }
+        .header-btn {
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn.primary { background-color: var(--primary-color); color: #fff; }
+        .header-btn.primary:hover { background-color: #0056b3; }
+
+        .header-btn.danger { background-color: var(--danger-color); color: #fff; }
+        .header-btn.danger:hover { background-color: #b21f2d; }
+
+        .user-info { display: flex; align-items: center; gap: 0.75rem; }
+        .user-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 1.1rem;
+        }
+
+        .admin-content { padding: 2rem; flex: 1; }
     </style>
-    <!-- Block cho CSS tùy chỉnh của từng trang -->
-    <th:block th:replace="${custom_css}"></th:block>
 </head>
 <body>
-    <div class="admin-panel" th:fragment="layout(title, content, activePage, custom_css)"> <!-- ĐÃ THÊM custom_css -->
-        <!-- ==================== SIDEBAR ==================== -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <span>TechAdmin</span>
-            </div>
-            <ul class="sidebar-nav">
-                <li><a th:href="@{/admin/dashboard}" th:classappend="${activePage == 'dashboard' ? 'active' : ''}"><span>📊</span> Dashboard</a></li>
-                <li><a th:href="@{/admin/laptops}" th:classappend="${activePage == 'laptops' ? 'active' : ''}"><span>💻</span> Quản lý Sản phẩm</a></li>
-                <li><a href="#"><span>📦</span> Quản lý Đơn hàng</a></li>
-                <li><a href="#"><span>👥</span> Quản lý Người dùng</a></li>
-            </ul>
-            <div class="sidebar-footer">
-                <a th:href="@{/}">← Quay lại trang chủ</a>
-            </div>
-        </aside>
 
-        <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
-        <div class="main-content-wrapper">
-            <header class="main-header">
-                <h1 class="page-title" th:text="${title}">Page Title</h1>
-                <div class="user-menu" th:if="${session.user != null}">
-                    <span>Xin chào, <strong th:text="${session.user.fullName}">Admin</strong></span>
-                    <a th:href="@{/logout}">Đăng xuất</a>
-                </div>
-            </header>
-
-            <main class="page-content">
-                <div th:replace="${content}"></div>
-            </main>
+<div class="admin-wrapper">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="/admin/dashboard" class="sidebar-logo">TechWorld</a>
+            <div class="sidebar-subtitle">Admin Panel</div>
         </div>
-    </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-section">
+                <div class="menu-section-title">Tổng quan</div>
+                <a href="/admin/dashboard" th:classappend="${pageTitle=='Dashboard'} ? ' active'" class="menu-item">
+                    <span class="icon">📊</span><span>Dashboard</span>
+                </a>
+                <a href="/admin/analytics" th:classappend="${pageTitle=='Analytics'} ? ' active'" class="menu-item">
+                    <span class="icon">📈</span><span>Phân tích</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Quản lý</div>
+                <a href="/admin/products" th:classappend="${pageTitle=='Products'} ? ' active'" class="menu-item">
+                    <span class="icon">💻</span><span>Sản phẩm</span>
+                </a>
+                <a href="/admin/orders" th:classappend="${pageTitle=='Order Management'} ? ' active'" class="menu-item">
+                    <span class="icon">📦</span><span>Đơn hàng</span>
+                </a>
+                <a href="/admin/users" th:classappend="${pageTitle=='Users'} ? ' active'" class="menu-item">
+                    <span class="icon">👥</span><span>Người dùng</span>
+                </a>
+                <a href="/admin/categories" th:classappend="${pageTitle=='Categories'} ? ' active'" class="menu-item">
+                    <span class="icon">📁</span><span>Danh mục</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Cài đặt</div>
+                <a href="/admin/settings" th:classappend="${pageTitle=='Settings'} ? ' active'" class="menu-item">
+                    <span class="icon">⚙️</span><span>Cấu hình</span>
+                </a>
+                <a href="/admin/reports" th:classappend="${pageTitle=='Reports'} ? ' active'" class="menu-item">
+                    <span class="icon">📄</span><span>Báo cáo</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 th:text="${pageTitle}">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <a href="/" class="header-btn primary">🏠 Trang chủ</a>
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <span style="font-weight: 500;">Admin</span>
+                </div>
+                <a href="/logout" class="header-btn danger">Đăng xuất</a>
+            </div>
+        </header>
+
+        <div class="admin-content" th:insert="${content}"></div>
+
+    </main>
+</div>
+
 </body>
 </html>

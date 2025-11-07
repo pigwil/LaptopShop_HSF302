@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html th:replace="~{admin/_layout :: layout(
-                        pageTitle=${pageTitle},
-                        content=~{::content}
-                      )}">
+                    pageTitle=${pageTitle},
+                    content=~{::content}
+                  )}">
+<th:block th:fragment="content">
 
 <th:block th:fragment="content">
 
@@ -43,6 +44,96 @@
         .status-Confirmed { color: #007bff; font-weight: bold; }
         .status-Delivered { color: #28a745; font-weight: bold; }
         .status-Cancelled { color: #dc3545; font-weight: bold; }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+
+        .order-table thead {
+            background-color: #f8fafc;
+        }
+
+        .order-table th {
+            padding: 12px 14px;
+            font-weight: 600;
+            color: #374151;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+
+        .order-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #111827;
+            vertical-align: top;
+        }
+
+        .order-table tr:hover {
+            background-color: #f9fafb;
+            transition: background-color 0.2s ease;
+        }
+
+        /* Center các cột dropdown */
+        .order-table td form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Dropdown (Status + Payment) */
+        .order-table select {
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #fff;
+            font-size: 14px;
+            color: #111827;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .order-table select:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Link View Details */
+        .order-table a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #2563eb;
+            transition: all 0.2s ease;
+        }
+
+        .order-table a:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        /* Cột không có dữ liệu */
+        .order-table .empty-row td {
+            text-align: center;
+            color: gray;
+            font-style: italic;
+        }
+
+        /* Responsive: Cuộn ngang nếu nhỏ */
+        @media (max-width: 900px) {
+            .order-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
     </style>
 
     <h1 th:text="${pageTitle}">Order Management</h1>
@@ -76,7 +167,7 @@
     <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
 
-    <table>
+    <table class="order-table">
         <thead>
         <tr>
             <th>ID</th>
@@ -93,11 +184,9 @@
             <td th:text="${order.id}">1</td>
             <td>
                 <div th:if="${order.createdBy != null}">
-                    <strong th:text="${order.createdBy.fullName}"></strong>
-                    <br/>
-                    <span th:text="${order.createdBy.phone}"></span>
-                    <br/>
-                    <span th:text="${order.createdBy.address}"></span>
+                    <strong th:text="${order.createdBy.fullName}">Nguyễn Văn A</strong><br/>
+                    <span th:text="${order.createdBy.phone}">0901234567</span><br/>
+                    <span th:text="${order.createdBy.address}">TP. Hồ Chí Minh</span>
                 </div>
                 <div th:if="${order.createdBy == null}">
                     <span>N/A</span>
@@ -106,8 +195,7 @@
             <td th:text="${#temporals.format(order.createdDate, 'dd/MM/yyyy')}">01/01/2024</td>
             <td>
                 <form th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}" method="post">
-                    <select name="status" onchange="this.form.submit()"
-                            style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                    <select name="status" onchange="this.form.submit()">
                         <option th:each="st : ${T(project.laptopshop.entity.Order.Status).values()}"
                                 th:if="${st.name() != 'Draft'}"
                                 th:value="${st}"
@@ -121,25 +209,22 @@
             <td>
                 <form th:action="@{'/admin/orders/' + ${order.id} + '/update-payment'}" method="post">
                     <select name="payed" onchange="this.form.submit()"
-                            style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;"
                             th:styleappend="${order.payed ? 'color:green; border-color:green;' : 'color:red; border-color:red;'}">
-                        <option value="true" th:selected="${order.payed}" style="color:green;">
-                            Paid
-                        </option>
-                        <option value="false" th:selected="${!order.payed}" style="color:red;">
-                            Unpaid
-                        </option>
+                        <option value="true" th:selected="${order.payed}" style="color:green;">Paid</option>
+                        <option value="false" th:selected="${!order.payed}" style="color:red;">Unpaid</option>
                     </select>
                     <button type="submit" style="display: none;">Save</button>
                 </form>
             </td>
-            <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' ₫'}">25,000,000 ₫</td>
+            <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' ₫'}" class="text-right">
+                25,000,000 ₫
+            </td>
             <td>
                 <a th:href="@{'/admin/orders/' + ${order.id}}">View Details</a>
             </td>
         </tr>
-        <tr th:if="${#lists.isEmpty(orders)}">
-            <td colspan="7" style="text-align:center; color:gray;">No orders found.</td>
+        <tr th:if="${#lists.isEmpty(orders)}" class="empty-row">
+            <td colspan="7">No orders found.</td>
         </tr>
         </tbody>
     </table>

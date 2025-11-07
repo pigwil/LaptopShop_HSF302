@@ -23,7 +23,7 @@ public class AdminLaptopController {
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
-        model.addAttribute("activePage", "dashboard");
+        model.addAttribute("pageTitle", "Dashboard");
         return "admin/dashboard";
     }
     

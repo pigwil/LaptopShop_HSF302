@@ -54,14 +54,10 @@ public class Laptop {
 
     @Min(0)
     @Column(name = "quantity_in_stock", nullable = false)
-    private int quantityInStock;
+    private int quantityInStock; // <-- ĐÃ THÊM TRƯỜNG NÀY
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "user_code",
-            referencedColumnName = "user_code",
-            nullable = false
-    )
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "laptop", cascade = CascadeType.ALL, orphanRemoval = true)

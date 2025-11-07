@@ -1,9 +1,7 @@
 package project.laptopshop.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,11 +21,7 @@ public class Order {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "created_by",
-            referencedColumnName = "user_code",
-            nullable = false
-    )
+    @JoinColumn(name = "user_id", nullable = false) // Sửa: Dùng user_id (khóa chính)
     private User createdBy;
 
     @PastOrPresent

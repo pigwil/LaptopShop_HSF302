@@ -1,6 +1,5 @@
 package project.laptopshop.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.laptopshop.entity.Laptop;
@@ -13,10 +12,14 @@ import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private LaptopRepository laptopRepository;
+
+    private final OrderRepository orderRepository;
+    private final LaptopRepository laptopRepository;
+
+    public OrderServiceImpl(OrderRepository orderRepository, LaptopRepository laptopRepository) {
+        this.orderRepository = orderRepository;
+        this.laptopRepository = laptopRepository;
+    }
 
     @Override
     public List<Order> getFilteredOrders(String status) {
@@ -42,8 +45,8 @@ public class OrderServiceImpl implements OrderService {
     public Order updateOrderStatus(Long id, Order.Status newStatus) throws Exception {
         Order order = getOrderById(id);
 
+        // Logic khi xác nhận đơn hàng
         if (newStatus == Order.Status.Confirmed && order.getOrderStatus() == Order.Status.Draft) {
-
             for (OrderDetail detail : order.getOrderDetails()) {
                 Laptop laptop = detail.getLaptop();
                 if (laptop.getQuantityInStock() < detail.getQuantity()) {
@@ -55,16 +58,14 @@ public class OrderServiceImpl implements OrderService {
                 if (newQuantity == 0) {
                     laptop.setLaptopStatus(Laptop.LaptopStatus.Out_Of_Stock);
                 }
-
                 laptopRepository.save(laptop);
             }
         }
 
+        // Logic khi hủy đơn hàng đã xác nhận
         if (newStatus == Order.Status.Cancelled && order.getOrderStatus() == Order.Status.Confirmed) {
-
             for (OrderDetail detail : order.getOrderDetails()) {
                 Laptop laptop = detail.getLaptop();
-
                 int newQuantity = laptop.getQuantityInStock() + detail.getQuantity();
                 laptop.setQuantityInStock(newQuantity);
 

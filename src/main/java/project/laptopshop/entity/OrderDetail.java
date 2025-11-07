@@ -18,11 +18,11 @@ public class OrderDetail {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", referencedColumnName = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false) // Sửa: Dùng order_id (khóa chính)
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "laptop_code", referencedColumnName = "laptop_code", nullable = false)
+    @JoinColumn(name = "laptop_id", nullable = false) // Sửa: Dùng laptop_id (khóa chính)
     private Laptop laptop;
 
     @Min(1)

@@ -1,8 +1,7 @@
 package project.laptopshop.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,40 +18,43 @@ import project.laptopshop.service.UserService;
 @RequestMapping("/account")
 public class AccountController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    // Hiển thị trang đổi mật khẩu
-    @GetMapping("/change-password")
-    public String showChangePasswordPage(Model model) {
-        model.addAttribute("changePasswordDTO", new ChangePasswordDTO());
-        return "change-password";
+    public AccountController(UserService userService) {
+        this.userService = userService;
     }
 
-    // Xử lý đổi mật khẩu
+    @GetMapping("/change-password")
+    public String showChangePasswordPage(Model model, HttpSession session) {
+        // Bắt buộc đăng nhập mới được vào trang này
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("changePasswordDTO", new ChangePasswordDTO());
+        return "account/change-password"; // Giả sử bạn có file change-password.html trong templates/account
+    }
+
     @PostMapping("/change-password")
     public String changePassword(@Valid @ModelAttribute ChangePasswordDTO changePasswordDTO,
                                  BindingResult result,
-                                 Authentication authentication,
+                                 HttpSession session,
                                  RedirectAttributes redirectAttributes) {
 
-        // Kiểm tra lỗi validation
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         if (result.hasErrors()) {
-            return "change-password";
+            return "account/change-password";
         }
 
         try {
-            // Lấy thông tin user đang đăng nhập
-            String username = authentication.getName();
-            User user = userService.findByUsername(username);
-
-            // Đổi mật khẩu
             userService.changePassword(user.getId(), changePasswordDTO);
-
             redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công!");
             return "redirect:/account/change-password";
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/account/change-password";
         }

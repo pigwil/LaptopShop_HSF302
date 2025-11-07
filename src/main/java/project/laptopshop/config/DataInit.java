@@ -2,7 +2,6 @@ package project.laptopshop.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import project.laptopshop.entity.User;
 import project.laptopshop.repository.UserRepository;
@@ -15,8 +14,7 @@ public class DataInit implements CommandLineRunner {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -26,7 +24,7 @@ public class DataInit implements CommandLineRunner {
             admin.setFullName("Administrator");
             admin.setUsername("admin");
             admin.setEmail("admin@laptopshop.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setPassword("admin123");
             admin.setRole(User.Role.ADMIN);
             admin.setCreatedAt(LocalDateTime.now());
             admin.setUpdatedAt(LocalDateTime.now());

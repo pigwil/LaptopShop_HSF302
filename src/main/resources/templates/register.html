@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Ký - Sony Store</title>
+    <title>Đăng Ký - TechStore</title>
     <style>
+        /* ... (giữ nguyên CSS của bạn) ... */
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,7 +25,7 @@
         .register-container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             width: 100%;
             max-width: 450px;
@@ -43,7 +44,7 @@
         }
 
         .register-header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -75,6 +76,12 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
 
         .form-group {
             margin-bottom: 20px;
@@ -99,8 +106,8 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #f093fb;
-            box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-group input.error {
@@ -114,28 +121,10 @@
             display: block;
         }
 
-        .password-strength {
-            height: 4px;
-            background: #e0e0e0;
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .password-strength-bar {
-            height: 100%;
-            width: 0%;
-            transition: all 0.3s ease;
-        }
-
-        .strength-weak { width: 33%; background: #f5576c; }
-        .strength-medium { width: 66%; background: #ffa726; }
-        .strength-strong { width: 100%; background: #66bb6a; }
-
         .btn-register {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -148,11 +137,7 @@
 
         .btn-register:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(240, 147, 251, 0.3);
-        }
-
-        .btn-register:active {
-            transform: translateY(0);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
         }
 
         .register-footer {
@@ -168,38 +153,21 @@
         }
 
         .register-footer a {
-            color: #f093fb;
+            color: #667eea;
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s ease;
         }
 
         .register-footer a:hover {
-            color: #f5576c;
             text-decoration: underline;
         }
 
-        .terms {
-            font-size: 12px;
-            color: #999;
-            margin-top: 15px;
-            line-height: 1.5;
-        }
-
-        .terms a {
-            color: #f093fb;
-            text-decoration: none;
-        }
-
-        .terms a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
 <div class="register-container">
     <div class="register-header">
-        <h1>🎮 Sony Store</h1>
+        <h1>💻 TechStore</h1>
         <p>Tạo tài khoản mới</p>
     </div>
 
@@ -210,7 +178,13 @@
         </div>
 
         <!-- Form đăng ký -->
-        <form th:action="@{/register}" method="post" th:object="${registerDTO}" id="registerForm">
+        <form th:action="@{/register}" method="post" th:object="${registerDTO}">
+            <div class="form-group">
+                <label for="fullName">Họ và Tên *</label>
+                <input type="text" id="fullName" th:field="*{fullName}" placeholder="Nguyễn Văn A" required>
+                <span class="error-message" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+            </div>
+            
             <div class="form-group">
                 <label for="username">Tên đăng nhập *</label>
                 <input type="text" id="username" th:field="*{username}" placeholder="Từ 4-20 ký tự" required>
@@ -226,9 +200,6 @@
             <div class="form-group">
                 <label for="password">Mật khẩu *</label>
                 <input type="password" id="password" th:field="*{password}" placeholder="Ít nhất 6 ký tự" required>
-                <div class="password-strength">
-                    <div class="password-strength-bar" id="strengthBar"></div>
-                </div>
                 <span class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
             </div>
 
@@ -239,12 +210,6 @@
             </div>
 
             <button type="submit" class="btn-register">Đăng Ký</button>
-
-            <p class="terms">
-                Bằng việc đăng ký, bạn đồng ý với
-                <a href="#">Điều khoản sử dụng</a> và
-                <a href="#">Chính sách bảo mật</a> của chúng tôi.
-            </p>
         </form>
 
         <div class="register-footer">
@@ -253,43 +218,5 @@
     </div>
 </div>
 
-<script>
-    // Kiểm tra độ mạnh mật khẩu
-    const passwordInput = document.getElementById('password');
-    const strengthBar = document.getElementById('strengthBar');
-
-    passwordInput.addEventListener('input', function() {
-        const password = this.value;
-        let strength = 0;
-
-        if (password.length >= 6) strength++;
-        if (password.length >= 10) strength++;
-        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-        if (/\d/.test(password)) strength++;
-        if (/[^a-zA-Z\d]/.test(password)) strength++;
-
-        strengthBar.className = 'password-strength-bar';
-
-        if (strength <= 2) {
-            strengthBar.classList.add('strength-weak');
-        } else if (strength <= 4) {
-            strengthBar.classList.add('strength-medium');
-        } else {
-            strengthBar.classList.add('strength-strong');
-        }
-    });
-
-    // Kiểm tra mật khẩu khớp
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    const form = document.getElementById('registerForm');
-
-    form.addEventListener('submit', function(e) {
-        if (passwordInput.value !== confirmPasswordInput.value) {
-            e.preventDefault();
-            alert('Mật khẩu xác nhận không khớp!');
-            confirmPasswordInput.focus();
-        }
-    });
-</script>
 </body>
 </html>

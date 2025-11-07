@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import project.laptopshop.entity.Laptop;
+import project.laptopshop.entity.User;
 import project.laptopshop.repository.LaptopRepository;
 
 import java.io.File;
@@ -17,7 +18,8 @@ public class LaptopServiceImpl implements LaptopService {
     private final LaptopRepository laptopRepository;
     private final String uploadDir;
 
-    public LaptopServiceImpl(LaptopRepository laptopRepository, @Value("${upload.path:laptop-images}") String uploadDir) {
+    public LaptopServiceImpl(LaptopRepository laptopRepository,
+                             @Value("${upload.path:laptop-images}") String uploadDir) {
         this.laptopRepository = laptopRepository;
         this.uploadDir = uploadDir;
     }
@@ -41,20 +43,29 @@ public class LaptopServiceImpl implements LaptopService {
 
     @Override
     public Laptop createLaptop(Laptop laptop, MultipartFile imageFile) throws IOException {
-        if (laptopRepository.existsByLaptopCode(laptop.getLaptopCode())) {
+        if (laptopRepository.existsByLaptopCode(laptop.getLaptopCode().trim())) {
             throw new RuntimeException("Mã laptop đã tồn tại!");
         }
+
+        // ✅ đảm bảo user không null
+        if (laptop.getUser() == null) {
+            throw new RuntimeException("Laptop phải có user!");
+        }
+
+        // ✅ xử lý ảnh
         if (imageFile != null && !imageFile.isEmpty()) {
             laptop.setImgPath(saveImageFile(imageFile));
         } else {
             laptop.setImgPath("/images/default-laptop.png");
         }
-        if (laptop.getQuantityInStock() > 0) {
-            laptop.setLaptopStatus(Laptop.LaptopStatus.Available);
-        } else {
-            laptop.setLaptopStatus(Laptop.LaptopStatus.Out_Of_Stock);
-        }
+
+        // ✅ trạng thái theo tồn kho
+        laptop.setLaptopStatus(laptop.getQuantityInStock() > 0
+                ? Laptop.LaptopStatus.Available
+                : Laptop.LaptopStatus.Out_Of_Stock);
+
         laptop.setIs_deleted(0);
+
         return laptopRepository.save(laptop);
     }
 
@@ -69,11 +80,9 @@ public class LaptopServiceImpl implements LaptopService {
         laptop.setPrice(updatedLaptop.getPrice());
         laptop.setQuantityInStock(updatedLaptop.getQuantityInStock());
 
-        if (updatedLaptop.getQuantityInStock() > 0) {
-            laptop.setLaptopStatus(Laptop.LaptopStatus.Available);
-        } else {
-            laptop.setLaptopStatus(Laptop.LaptopStatus.Out_Of_Stock);
-        }
+        laptop.setLaptopStatus(updatedLaptop.getQuantityInStock() > 0
+                ? Laptop.LaptopStatus.Available
+                : Laptop.LaptopStatus.Out_Of_Stock);
 
         if (imageFile != null && !imageFile.isEmpty()) {
             laptop.setImgPath(saveImageFile(imageFile));
@@ -104,12 +113,14 @@ public class LaptopServiceImpl implements LaptopService {
 
         String originalName = file.getOriginalFilename();
         String extension = (originalName != null && originalName.contains("."))
-                ? originalName.substring(originalName.lastIndexOf(".")) : "";
+                ? originalName.substring(originalName.lastIndexOf("."))
+                : "";
         String fileName = UUID.randomUUID() + extension;
 
         File dest = new File(dir, fileName);
         file.transferTo(dest);
 
-        return "/" + uploadDir + "/" + fileName;
+        // ✅ chuẩn hóa đường dẫn để trình duyệt đọc được
+        return "/" + uploadDir.replace("\\", "/") + "/" + fileName;
     }
 }

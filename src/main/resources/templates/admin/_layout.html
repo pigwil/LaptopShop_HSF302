@@ -184,7 +184,7 @@
 
             <div class="menu-section">
                 <div class="menu-section-title">Quản lý</div>
-                <a href="/admin/products" th:classappend="${pageTitle=='Products'} ? ' active'" class="menu-item">
+                <a th:href="@{/admin/laptops}" th:classappend="${pageTitle=='Products'} ? ' active'" class="menu-item">
                     <span class="icon">💻</span><span>Sản phẩm</span>
                 </a>
                 <a href="/admin/orders" th:classappend="${pageTitle=='Order Management'} ? ' active'" class="menu-item">

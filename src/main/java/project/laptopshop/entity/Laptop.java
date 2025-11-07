@@ -19,7 +19,7 @@ import java.util.List;
 public class Laptop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotBlank
     @Size(max = 10)
@@ -33,7 +33,7 @@ public class Laptop {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "laptop_status", nullable = false)
-    private LaptopStatus laptopStatus;
+    private LaptopStatus laptopStatus = LaptopStatus.Available;
 
     @NotBlank
     @Size(max = 50)
@@ -65,10 +65,24 @@ public class Laptop {
 
     @NotBlank
     @Column(name = "img_path", nullable = false, length = 1000)
-    private String imgPath;
+    private String imgPath = "/images/default-laptop.png";
 
     @Column(name = "is_deleted")
     private int is_deleted = 0;
+
+    public Laptop(String laptopCode, String laptopName, LaptopStatus laptopStatus, String brand, String cpuInfo, String ramInfo, double price, int quantityInStock, User user, String imgPath, int is_deleted) {
+        this.laptopCode = laptopCode;
+        this.laptopName = laptopName;
+        this.laptopStatus = laptopStatus;
+        this.brand = brand;
+        this.cpuInfo = cpuInfo;
+        this.ramInfo = ramInfo;
+        this.price = price;
+        this.quantityInStock = quantityInStock;
+        this.user = user;
+        this.imgPath = imgPath;
+        this.is_deleted = is_deleted;
+    }
 
     public enum LaptopStatus {
         Out_Of_Stock,

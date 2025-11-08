@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng - TechWorld</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #212529;
+            --body-bg: #f4f6f9;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--body-bg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header styles from home.html */
+        .main-header {
+            background-color: #fff;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        /* Cart specific styles */
+        .cart-container {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin: 2rem 0;
+            padding: 2rem;
+        }
+
+        .cart-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .cart-table th {
+            background-color: var(--light-color);
+            font-weight: 500;
+        }
+
+        .quantity-input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .cart-total {
+            text-align: right;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .empty-cart a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <a th:href="@{/}" class="logo">TechWorld</a>
+            <div class="header-actions">
+                <div th:if="${user != null}" class="user-welcome">
+                    <span>Xin chào, <strong th:text="${user.fullName}">User</strong></span>
+                    <a href="/cart" class="action-btn">🛒 Giỏ hàng</a>
+                    <a th:if="${user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
+                       href="/admin/dashboard" class="action-btn register">Dashboard</a>
+                    <a href="/logout" class="action-btn logout">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Cart Content -->
+<div class="container">
+    <div class="cart-container">
+        <h1 class="cart-title">Giỏ hàng của bạn</h1>
+
+        <div th:if="${#lists.isEmpty(cart)}" class="empty-cart">
+            <p>Giỏ hàng trống. <a href="/">Tiếp tục mua sắm</a></p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(cart)}">
+            <table class="cart-table">
+                <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Tổng</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${cart}">
+                    <td th:text="${item.name}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    <td>
+                        <form th:action="@{/cart/update}" method="post" style="display: inline;">
+                            <input type="hidden" name="laptopCode" th:value="${item.laptopCode}">
+                            <input type="number" name="quantity" th:value="${item.quantity}" min="1"
+                                   class="quantity-input">
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        </form>
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    <td>
+                        <form th:action="@{/cart/remove}" method="post" style="display: inline;">
+                            <input type="hidden" name="laptopCode" th:value="${item.laptopCode}">
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="cart-total">
+                <h3>Tổng tiền: <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></h3>
+            </div>
+
+            <div class="cart-actions">
+                <a href="/" class="btn btn-primary">Tiếp tục mua sắm</a>
+                <a href="/checkout" class="btn btn-success">Tiến hành đặt hàng</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

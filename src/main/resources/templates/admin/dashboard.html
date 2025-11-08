@@ -1,118 +1,340 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <!-- Định nghĩa fragment CSS tùy chỉnh -->
-    <th:block th:fragment="custom-css">
-        <style>
-            .stats-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1.5rem;
-            }
-            .stat-card {
-                background-color: var(--card-bg);
-                padding: 1.5rem;
-                border-radius: 12px;
-                box-shadow: var(--shadow);
-                display: flex;
-                align-items: flex-start;
-                gap: 1.5rem;
-                transition: all 0.3s ease;
-            }
-            .stat-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            }
-            .stat-card .icon {
-                font-size: 1.5rem;
-                padding: 1rem;
-                border-radius: 12px;
-                color: #fff;
-            }
-            .stat-card.sales .icon { background-color: #22c55e; }
-            .stat-card.orders .icon { background-color: #3b82f6; }
-            .stat-card.products .icon { background-color: #ec4899; }
-            .stat-card.users .icon { background-color: #f97316; }
+<html xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{admin/_layout :: layout(
+                    pageTitle='Dashboard',
+                    content=~{::content}
+                  )}">
+<th:block th:fragment="content">
 
-            .stat-card .info p {
-                font-size: 0.9rem;
-                color: var(--text-light);
-                font-weight: 500;
-                margin-bottom: 0.25rem;
-            }
-            .stat-card .info h3 {
-                font-size: 1.75rem;
-                font-weight: 700;
-            }
+    <style>
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
 
-            .main-widgets {
-                margin-top: 2.5rem;
-                display: grid;
-                grid-template-columns: 2fr 1fr;
-                gap: 1.5rem;
-            }
-            .widget {
-                background-color: var(--card-bg);
-                padding: 1.5rem;
-                border-radius: 12px;
-                box-shadow: var(--shadow);
-            }
-            .widget h4 { font-size: 1.2rem; margin-bottom: 1rem; }
-        </style>
-    </th:block>
-</head>
-<body>
+        .page-subtitle {
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+        }
 
-    <!-- Thay thế layout và truyền vào các tham số -->
-    <div th:replace="~{admin/_layout :: layout(title='Dashboard', content=~{::.dashboard-content}, activePage='dashboard', custom_css=~{::#custom-css})}">
-        
-        <div class="dashboard-content">
-            <!-- Thẻ thống kê -->
-            <div class="stats-grid">
-                <div class="stat-card sales">
-                    <div class="icon">💰</div>
-                    <div class="info">
-                        <p>Doanh thu tháng</p>
-                        <h3>1.280.000.000 ₫</h3>
-                    </div>
-                </div>
-                <div class="stat-card orders">
-                    <div class="icon">📦</div>
-                    <div class="info">
-                        <p>Đơn hàng mới</p>
-                        <h3>152</h3>
-                    </div>
-                </div>
-                <div class="stat-card products">
-                    <div class="icon">💻</div>
-                    <div class="info">
-                        <p>Sản phẩm</p>
-                        <h3>56</h3>
-                    </div>
-                </div>
-                <div class="stat-card users">
-                    <div class="icon">👥</div>
-                    <div class="info">
-                        <p>Người dùng</p>
-                        <h3>320</h3>
-                    </div>
-                </div>
-            </div>
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-            <!-- Các widget chính -->
-            <div class="main-widgets">
-                <div class="widget recent-orders">
-                    <h4>Đơn hàng gần đây</h4>
-                    <p>Chưa có dữ liệu...</p>
-                </div>
-                <div class="widget top-products">
-                    <h4>Sản phẩm bán chạy</h4>
-                    <p>Chưa có dữ liệu...</p>
-                </div>
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.sales { --card-color-1: #22c55e; --card-color-2: #16a34a; }
+        .stat-card.orders { --card-color-1: #3b82f6; --card-color-2: #2563eb; }
+        .stat-card.products { --card-color-1: #ec4899; --card-color-2: #db2777; }
+        .stat-card.users { --card-color-1: #f97316; --card-color-2: #ea580c; }
+
+        .stat-icon {
+            font-size: 3rem;
+            opacity: 0.9;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Widgets Grid */
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .widget {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        .widget-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .widget-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .widget-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Orders Table */
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .orders-table th {
+            text-align: left;
+            padding: 0.75rem;
+            background-color: var(--light-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+        }
+
+        .orders-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--light-color);
+        }
+
+        .orders-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending { background-color: #fff3cd; color: #856404; }
+        .status-badge.processing { background-color: #cfe2ff; color: #084298; }
+        .status-badge.completed { background-color: #d1e7dd; color: #0f5132; }
+
+        /* Product List */
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .product-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .product-img {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--border-radius);
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .product-name { font-weight: 600; margin-bottom: 0.25rem; }
+        .product-sales { font-size: 0.85rem; color: var(--secondary-color); }
+
+        /* Chart Placeholder */
+        .chart-container {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1024px) { .widgets-grid { grid-template-columns: 1fr; } }
+    </style>
+
+    <h2 class="page-title">Tổng quan hệ thống</h2>
+    <p class="page-subtitle">Xem tổng quan về hoạt động kinh doanh của bạn</p>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card sales">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+                <h3>1.28 Tỷ</h3>
+                <p>Doanh thu tháng này</p>
             </div>
         </div>
 
+        <div class="stat-card orders">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+                <h3>152</h3>
+                <p>Đơn hàng mới</p>
+            </div>
+        </div>
+
+        <div class="stat-card products">
+            <div class="stat-icon">💻</div>
+            <div class="stat-info">
+                <h3>56</h3>
+                <p>Sản phẩm</p>
+            </div>
+        </div>
+
+        <div class="stat-card users">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+                <h3>320</h3>
+                <p>Người dùng</p>
+            </div>
+        </div>
     </div>
 
-</body>
+    <!-- Chart -->
+    <div class="chart-container">
+        <div class="widget-header">
+            <h3 class="widget-title">Doanh thu theo tháng</h3>
+            <a href="#" class="widget-link">Xem chi tiết →</a>
+        </div>
+        <div class="chart-placeholder">
+            📊 Biểu đồ doanh thu (Tích hợp Chart.js)
+        </div>
+    </div>
+
+    <!-- Widgets -->
+    <div class="widgets-grid">
+        <!-- Recent Orders -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">Đơn hàng gần đây</h3>
+                <a href="/admin/orders" class="widget-link">Xem tất cả →</a>
+            </div>
+            <table class="orders-table">
+                <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>#ORD-1001</td>
+                    <td>Nguyễn Văn A</td>
+                    <td>28.990.000 ₫</td>
+                    <td><span class="status-badge pending">Chờ xử lý</span></td>
+                </tr>
+                <tr>
+                    <td>#ORD-1002</td>
+                    <td>Trần Thị B</td>
+                    <td>35.500.000 ₫</td>
+                    <td><span class="status-badge processing">Đang xử lý</span></td>
+                </tr>
+                <tr>
+                    <td>#ORD-1003</td>
+                    <td>Lê Văn C</td>
+                    <td>42.000.000 ₫</td>
+                    <td><span class="status-badge completed">Hoàn thành</span></td>
+                </tr>
+                <tr>
+                    <td>#ORD-1004</td>
+                    <td>Phạm Thị D</td>
+                    <td>25.990.000 ₫</td>
+                    <td><span class="status-badge pending">Chờ xử lý</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Products -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">Sản phẩm bán chạy</h3>
+                <a href="/admin/products" class="widget-link">Xem tất cả →</a>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-img">💻</div>
+                    <div class="product-details">
+                        <div class="product-name">MacBook Pro M3</div>
+                        <div class="product-sales">52 đã bán</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">💻</div>
+                    <div class="product-details">
+                        <div class="product-name">Dell XPS 15</div>
+                        <div class="product-sales">48 đã bán</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">💻</div>
+                    <div class="product-details">
+                        <div class="product-name">ASUS ROG Strix</div>
+                        <div class="product-sales">35 đã bán</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">💻</div>
+                    <div class="product-details">
+                        <div class="product-name">HP Pavilion</div>
+                        <div class="product-sales">28 đã bán</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
 </html>

@@ -28,7 +28,7 @@ public class Laptop {
 
     @NotBlank
     @Size(max = 100)
-    @Column(name = "laptop_name", length = 100, nullable = false)
+    @Column(name = "laptop_name", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String laptopName;
 
     @Enumerated(EnumType.STRING)

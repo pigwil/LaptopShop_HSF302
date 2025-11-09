@@ -346,9 +346,10 @@
                     <div class="product-image">
                         <a th:href="@{/product/{id}(id=${product.id})}">
                             <img th:if="${product.imgPath != null}"
-                                 th:src="@{${product.imgPath}}"
+                                 th:src="@{'/img/' + ${product.imgPath}}"
                                  th:alt="${product.laptopName}"
                                  loading="lazy">
+
                             <span th:if="${product.imgPath == null}" style="font-size: 4rem;">💻</span>
                         </a>
                     </div>

@@ -58,6 +58,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order updateOrderStatus(Long id, Order.Status newStatus) throws Exception {
         Order order = getOrderById(id);
+        if (order.getOrderStatus() == Order.Status.Cancelled) {
+            throw new Exception("Không thể cập nhật trạng thái cho đơn hàng đã bị hủy.");
+        }
 
         // Logic khi xác nhận đơn hàng
         if (newStatus == Order.Status.Confirmed && order.getOrderStatus() == Order.Status.Draft) {
@@ -97,6 +100,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void updatePaymentStatus(Long id, boolean isPaid) {
         Order order = getOrderById(id);
+        if (order.getOrderStatus() == Order.Status.Cancelled) {
+            throw new RuntimeException("Không thể cập nhật thanh toán cho đơn hàng đã bị hủy.");
+        }
         order.setPayed(isPaid);
         orderRepository.save(order);
     }

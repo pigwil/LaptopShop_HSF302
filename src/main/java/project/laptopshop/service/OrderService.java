@@ -14,5 +14,5 @@ public interface OrderService {
     Order getOrderById(Long id);
     Order updateOrderStatus(Long id, Order.Status newStatus) throws Exception;
     void updatePaymentStatus(Long id, boolean isPaid);
-    void createOrder(User user, @Valid CheckoutDTO checkoutDTO, HttpSession session);
+    void createOrder(User user, @Valid CheckoutDTO checkoutDTO);
 }

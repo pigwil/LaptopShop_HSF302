@@ -168,10 +168,10 @@
         <div class="header-content">
             <a th:href="@{/}" class="logo">TechWorld</a>
             <div class="header-actions">
-                <div th:if="${user != null}" class="user-welcome">
-                    <span>Xin chào, <strong th:text="${user.fullName}">User</strong></span>
+                <div th:if="${session.user != null}" class="user-welcome">
+                    <span>Xin chào, <strong th:text="${session.user.fullName}">User</strong></span>
                     <a href="/cart" class="action-btn">🛒 Giỏ hàng</a>
-                    <a th:if="${user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
+                    <a th:if="${session.user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
                        href="/admin/dashboard" class="action-btn">Dashboard</a>
                     <a href="/logout" class="action-btn">Đăng xuất</a>
                 </div>

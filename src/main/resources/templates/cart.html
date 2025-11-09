@@ -78,6 +78,9 @@
             transition: all 0.3s ease;
         }
 
+        .action-btn.logout { background-color: var(--danger-color); color: #fff; }
+        .action-btn.logout:hover { background-color: #b21f2d; }
+
         /* Cart specific styles */
         .cart-container {
             background-color: #fff;
@@ -176,10 +179,10 @@
         <div class="header-content">
             <a th:href="@{/}" class="logo">TechWorld</a>
             <div class="header-actions">
-                <div th:if="${user != null}" class="user-welcome">
-                    <span>Xin chào, <strong th:text="${user.fullName}">User</strong></span>
+                <div th:if="${session.user != null}" class="user-welcome">
+                    <span>Xin chào, <strong th:text="${session.user.fullName}">User</strong></span>
                     <a href="/cart" class="action-btn">🛒 Giỏ hàng</a>
-                    <a th:if="${user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
+                    <a th:if="${session.user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
                        href="/admin/dashboard" class="action-btn register">Dashboard</a>
                     <a href="/logout" class="action-btn logout">Đăng xuất</a>
                 </div>
@@ -210,7 +213,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="item : ${cart}">
-                    <td th:text="${item.name}"></td>
+                    <td th:text="${item.laptopName}"></td>
                     <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
                     <td>
                         <form th:action="@{/cart/update}" method="post" style="display: inline;">
@@ -237,7 +240,7 @@
 
             <div class="cart-actions">
                 <a href="/" class="btn btn-primary">Tiếp tục mua sắm</a>
-                <a href="/checkout" class="btn btn-success">Tiến hành đặt hàng</a>
+                <a href="/check-out" class="btn btn-success">Tiến hành đặt hàng</a>
             </div>
         </div>
     </div>

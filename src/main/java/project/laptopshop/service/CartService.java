@@ -1,15 +1,15 @@
 package project.laptopshop.service;
 
-import jakarta.servlet.http.HttpSession;
 import project.laptopshop.dto.CartItemDTO;
+import project.laptopshop.entity.User;
 
 import java.util.List;
 
 public interface CartService {
-    List<CartItemDTO> getCart(HttpSession session);
-    void addToCart(String laptopCode, Integer quantity, HttpSession session);
-    void updateCart(String laptopCode, Integer quantity, HttpSession session);
-    void removeFromCart(String laptopCode, HttpSession session);
-    Double getTotalPrice(HttpSession session);
-    void clearCart(HttpSession session);
+    List<CartItemDTO> getCartFromOrders(Long userId);
+    void addToCart(String laptopCode, Integer quantity, Long userId);
+    void updateCart(String laptopCode, Integer quantity, Long userId);
+    void removeFromCart(String laptopCode, Long userId);
+    Double getTotalPrice(Long userId);
+    void clearCart(Long userId);
 }

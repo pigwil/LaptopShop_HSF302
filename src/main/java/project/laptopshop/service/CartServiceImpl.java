@@ -1,11 +1,13 @@
 package project.laptopshop.service;
 
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.laptopshop.dto.CartItemDTO;
 import project.laptopshop.entity.Laptop;
+import project.laptopshop.entity.Order;
+import project.laptopshop.entity.OrderDetail;
 import project.laptopshop.repository.LaptopRepository;
+import project.laptopshop.repository.OrderRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,57 +16,94 @@ import java.util.List;
 public class CartServiceImpl implements CartService {
     @Autowired
     private LaptopRepository laptopRepository;
-    private static final String CART_SESSION_KEY = "cart";
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<CartItemDTO> getCart(HttpSession session) {
-        List<CartItemDTO> cart = (List<CartItemDTO>) session.getAttribute(CART_SESSION_KEY);
-        if (cart == null) {
-            cart = new ArrayList<>();
-            session.setAttribute(CART_SESSION_KEY, cart);
+    public List<CartItemDTO> getCartFromOrders(Long userId) {
+        List<Order> draftOrders = orderRepository.findByCreatedByIdAndOrderStatus(userId, Order.Status.Draft);
+        for (Order order : draftOrders) {
+            System.out.println("Current Order: " + order.getId());
         }
-        return cart;
+        List<CartItemDTO> cartItems = new ArrayList<>();
+
+        for (Order order : draftOrders) {
+            for (OrderDetail detail : order.getOrderDetails()) {
+                cartItems.add(new CartItemDTO(
+                        detail.getLaptop().getLaptopCode(),
+                        detail.getLaptop().getLaptopName(),
+                        detail.getUnitPrice(),
+                        detail.getQuantity()
+                ));
+            }
+        }
+        return cartItems;
     }
 
     @Override
-    public void addToCart(String laptopCode, Integer quantity, HttpSession session) {
+    public void addToCart(String laptopCode, Integer quantity, Long userId) {
         Laptop laptop = laptopRepository.findByLaptopCode(laptopCode);
         if (laptop == null) {
             throw new RuntimeException("Laptop not found");
         }
-        List<CartItemDTO> cart = getCart(session);
-        for (CartItemDTO item : cart) {
-            if (item.getLaptopCode().equals(laptopCode)) {
-                item.setQuantity(item.getQuantity() + quantity);
-                return;
-            }
+
+        List<Order> draftOrders = orderRepository.findByCreatedByIdAndOrderStatus(userId, Order.Status.Draft);
+        Order draftOrder = draftOrders.isEmpty() ? new Order(userId, Order.Status.Draft) : draftOrders.get(0);
+
+        OrderDetail existingDetail = draftOrder.getOrderDetails().stream()
+                .filter(d -> d.getLaptop().getLaptopCode().equals(laptopCode))
+                .findFirst()
+                .orElse(null);
+
+        if (existingDetail != null) {
+            existingDetail.setQuantity(existingDetail.getQuantity() + quantity);
+        } else {
+            OrderDetail newDetail = new OrderDetail(draftOrder, laptop, laptop.getPrice(), quantity);
+            draftOrder.getOrderDetails().add(newDetail);
         }
-        cart.add(new CartItemDTO(laptopCode, laptop.getLaptopName(), laptop.getPrice(), quantity));
+
+        orderRepository.save(draftOrder);
     }
 
     @Override
-    public void updateCart(String laptopCode, Integer quantity, HttpSession session) {
-        List<CartItemDTO> cart = getCart(session);
-        cart.removeIf(item -> item.getLaptopCode().equals(laptopCode));
+    public void updateCart(String laptopCode, Integer quantity, Long userId) {
+        List<Order> draftOrders = orderRepository.findByCreatedByIdAndOrderStatus(userId, Order.Status.Draft);
+        if (draftOrders.isEmpty()) return;
+
+        Order draftOrder = draftOrders.get(0);
+        draftOrder.getOrderDetails().removeIf(d -> d.getLaptop().getLaptopCode().equals(laptopCode));
+
         if (quantity > 0) {
-            addToCart(laptopCode, quantity, session);
+            addToCart(laptopCode, quantity, userId);
+        } else {
+            orderRepository.save(draftOrder);
         }
     }
 
     @Override
-    public void removeFromCart(String laptopCode, HttpSession session) {
-        List<CartItemDTO> cart = getCart(session);
-        cart.removeIf(item -> item.getLaptopCode().equals(laptopCode));
+    public void removeFromCart(String laptopCode, Long userId) {
+        List<Order> draftOrders = orderRepository.findByCreatedByIdAndOrderStatus(userId, Order.Status.Draft);
+        if (draftOrders.isEmpty()) return;
+
+        Order draftOrder = draftOrders.get(0);
+        draftOrder.getOrderDetails().removeIf(d -> d.getLaptop().getLaptopCode().equals(laptopCode));
+        orderRepository.save(draftOrder);
     }
 
     @Override
-    public Double getTotalPrice(HttpSession session) {
-        return getCart(session).stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
+    public Double getTotalPrice(Long userId) {
+        return getCartFromOrders(userId).stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
     }
 
     @Override
-    public void clearCart(HttpSession session) {
-        session.removeAttribute(CART_SESSION_KEY);
+    public void clearCart(Long userId) {
+        List<Order> draftOrders = orderRepository.findByCreatedByIdAndOrderStatus(userId, Order.Status.Draft);
+        draftOrders.forEach(order -> {
+            order.getOrderDetails().clear();
+            orderRepository.save(order);
+        });
     }
 }

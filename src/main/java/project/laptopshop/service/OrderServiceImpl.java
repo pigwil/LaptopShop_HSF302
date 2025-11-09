@@ -103,8 +103,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void createOrder(User user, CheckoutDTO checkoutDTO, HttpSession session) {
-        List<CartItemDTO> cart = cartService.getCart(session);
+    public void createOrder(User user, CheckoutDTO checkoutDTO) {
+        List<CartItemDTO> cart = cartService.getCartFromOrders(user.getId());
         if (cart.isEmpty()) {
             throw new RuntimeException("Giỏ hàng trống");
         }
@@ -117,14 +117,15 @@ public class OrderServiceImpl implements OrderService {
         order.setIs_archived(0);
 
         order = orderRepository.save(order);
-
         for (CartItemDTO item : cart) {
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
+
             Laptop laptop = laptopRepository.findByLaptopCode(item.getLaptopCode());
             if (laptop == null) {
                 throw new RuntimeException("Không tìm thấy laptop với mã: " + item.getLaptopCode());
             }
+
             detail.setLaptop(laptop);
             detail.setQuantity(item.getQuantity());
             detail.setUnitPrice(item.getPrice());
@@ -132,6 +133,6 @@ public class OrderServiceImpl implements OrderService {
 
             orderDetailRepository.save(detail);
         }
-        cartService.clearCart(session);
+        cartService.clearCart(user.getId());
     }
 }

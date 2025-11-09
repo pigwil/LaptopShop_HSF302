@@ -10,7 +10,7 @@
         <style>
             .table-wrapper { background-color: #fff; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
             .table { width: 100%; border-collapse: collapse; }
-            .table th, .table td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+            .table th, .table td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
             .table th { font-weight: 600; background-color: #f9fafb; }
             .table img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
             .action-buttons a, .action-buttons button { margin-right: 0.5rem; padding: 0.4rem 0.8rem; border-radius: 4px; text-decoration: none; border: none; cursor: pointer; font-size: 0.85rem; }
@@ -36,12 +36,12 @@
                 </thead>
                 <tbody>
                     <tr th:each="laptop : ${laptops}">
-                        <td><img th:src="${laptop.imgPath}" th:alt="${laptop.laptopName}"></td>
+                        <td><img th:src="@{${laptop.imgPath}}" th:alt="${laptop.laptopName}"></td>
                         <td th:text="${laptop.laptopName}">Dell XPS 13</td>
                         <td th:text="${laptop.brand}">Dell</td>
                         <td th:text="${#numbers.formatDecimal(laptop.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25.000.000 ₫</td>
                         <td th:text="${laptop.quantityInStock}">10</td>
-                        <td th:text="${laptop.laptopStatus}">Available</td>
+                        <td th:text="${laptop.laptopStatus != null ? laptop.laptopStatus.toString().replace('_', ' ') : ''}">Available</td>
                         <td class="action-buttons">
                             <a th:href="@{/admin/laptops/edit/{id}(id=${laptop.id})}" class="btn-edit">Sửa</a>
                             <form th:action="@{/admin/laptops/delete/{id}(id=${laptop.id})}" method="post" style="display: inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">

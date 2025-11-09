@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.laptopName}"></title>
+    <style>
+        /* Thêm một vài style cơ bản */
+        body { font-family: sans-serif; }
+        .container { max-width: 800px; margin: 2rem auto; padding: 1rem; }
+        .product-image { max-width: 100%; }
+        .product-price { font-size: 1.5rem; color: #b12704; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${product.laptopName}">Tên Laptop</h1>
+        <img th:src="@{${product.imgPath}}" alt="Product Image" class="product-image">
+        <p><strong>Thương hiệu:</strong> <span th:text="${product.brand}"></span></p>
+        <p><strong>CPU:</strong> <span th:text="${product.cpuInfo}"></span></p>
+        <p><strong>RAM:</strong> <span th:text="${product.ramInfo}"></span></p>
+        <p class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></p>
+        <p><strong>Trạng thái:</strong> <span th:text="${product.laptopStatus.toString().replace('_', ' ')}"></span></p>
+        
+        <!-- Nút Add to Cart sẽ được thêm vào sau -->
+        <a href="#">Add to Cart</a>
+        <br><br>
+        <a href="/">Quay lại trang chủ</a>
+    </div>
+</body>
+</html>

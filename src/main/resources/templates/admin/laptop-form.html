@@ -112,7 +112,7 @@
                     <div class="form-group">
                         <label for="imageFile">Ảnh sản phẩm</label>
                         <input type="file" id="imageFile" name="imageFile" accept="image/*">
-                        <img th:if="*{imgPath != null}" th:src="*{imgPath}" alt="Current Image" class="current-image">
+                        <img th:if="*{imgPath != null}" th:src="@{*{imgPath}}" alt="Current Image" class="current-image">
                     </div>
 
                     <div class="form-actions">

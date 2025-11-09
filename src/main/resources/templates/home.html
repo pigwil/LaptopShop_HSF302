@@ -168,7 +168,6 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        /* Chỉnh sửa ảnh sản phẩm */
         .product-image {
             width: 100%;
             height: 220px;
@@ -219,7 +218,38 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color);
+            margin-top: auto; /* Đẩy giá xuống dưới cùng */
         }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions .btn {
+            flex: 1;
+            text-align: center;
+            padding: 0.6rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .btn-details {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+        .btn-details:hover { background-color: #5a6268; }
+
+        .btn-add-cart {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        .btn-add-cart:hover { background-color: #0056b3; }
+
 
         /* Footer */
         .main-footer {
@@ -314,7 +344,7 @@
                     <div class="product-image">
                         <a th:href="@{/product/{id}(id=${product.id})}">
                             <img th:if="${product.imgPath != null}"
-                                 th:src="${product.imgPath}"
+                                 th:src="@{${product.imgPath}}"
                                  th:alt="${product.laptopName}"
                                  loading="lazy">
                             <span th:if="${product.imgPath == null}" style="font-size: 4rem;">💻</span>
@@ -324,6 +354,12 @@
                         <div class="product-brand" th:text="${product.brand}">Thương hiệu</div>
                         <h3 class="product-name" th:text="${product.laptopName}">Tên Laptop</h3>
                         <p class="product-specs" th:text="${product.cpuInfo + ' / ' + product.ramInfo}">Thông số kỹ thuật</p>
+                        
+                        <div class="product-actions">
+                            <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-details">View Details</a>
+                            <a href="#" class="btn btn-add-cart">Add to Cart</a>
+                        </div>
+
                         <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">28.990.000₫</div>
                     </div>
                 </div>

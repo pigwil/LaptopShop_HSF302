@@ -227,6 +227,8 @@
             margin-top: 1rem;
             margin-bottom: 1rem;
         }
+        .btn-add-cart:hover { background-color: #0056b3; }
+
 
         .product-actions .btn {
             flex: 1;
@@ -315,7 +317,7 @@
                 <!-- Nếu đã đăng nhập -->
                 <div th:if="${session.user != null}" class="user-welcome">
                     <span>Xin chào, <strong th:text="${session.user.fullName}">User</strong></span>
-                    <a href="/cart" class="action-btn">🛒 Giỏ hàng</a>
+                    <a href="/order-history" class="action-btn">🛒 Lịch sử đơn hàng</a>
                     <a th:if="${session.user.role == T(project.laptopshop.entity.User.Role).ADMIN}" href="/admin/dashboard" class="action-btn register">Dashboard</a>
                     <a href="/logout" class="action-btn logout">Đăng xuất</a>
                 </div>
@@ -357,9 +359,11 @@
                         
                         <div class="product-actions">
                             <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-details">View Details</a>
-                            <a href="#" class="btn btn-add-cart">Add to Cart</a>
+                            <form th:action="@{/check-out}" method="get" style="display:inline;">
+                                <input type="hidden" name="laptopCode" th:value="${product.laptopCode}">
+                                <button type="submit" class="btn btn-primary">Buy</button>
+                            </form>
                         </div>
-
                         <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">28.990.000₫</div>
                     </div>
                 </div>

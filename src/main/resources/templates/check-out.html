@@ -180,37 +180,65 @@
     </div>
 </header>
 
-<!-- Checkout Content -->
 <div class="container">
     <div class="checkout-container">
         <h1 class="checkout-title">Đặt hàng</h1>
-        <div class="total-price">
-            Tổng tiền: <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
-        </div>
-
         <form th:action="@{/check-out}" method="post" th:object="${checkoutDTO}">
-            <div class="form-group">
-                <label for="shippingAddress" class="form-label">Địa chỉ giao hàng</label>
-                <textarea class="form-control" id="shippingAddress" name="shippingAddress"
-                          th:field="*{shippingAddress}" rows="3"></textarea>
-                <div th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}"
-                     class="text-danger"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="paymentMethod" class="form-label">Phương thức thanh toán</label>
-                <input type="text" class="form-control" id="paymentMethod" name="paymentMethod"
-                       th:field="*{paymentMethod}" readonly>
-            </div>
-
+            <table>
+                <thead>
+                <tr>
+                    <th>Laptop</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, iterStat : ${cartItems}" th:data-price="${item.price}">
+                    <td th:text="${item.laptopName}"></td>
+                    <td>
+                        <input type="number" class="quantity-input" min="1"
+                               th:value="${item.quantity}" style="width:60px;">
+                    </td>
+                    <td class="item-price" th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' ₫'"></td>
+                    <input type="hidden" name="laptopCodes" th:value="${item.laptopCode}">
+                    <input type="hidden" class="quantity-hidden" name="quantities" th:value="${item.quantity}">
+                </tr>
+                </tbody>
+            </table>
+            <p>Tổng tiền: <span id="totalPrice" th:text="${#numbers.formatDecimal(totalPrice,0,'COMMA',0,'POINT')} + ' ₫'"></span></p>
             <div>
-                <button type="submit" class="btn btn-primary">Đặt hàng</button>
-                <a href="/cart" class="btn btn-secondary">Quay lại giỏ hàng</a>
+                <label>Địa chỉ giao hàng</label>
+                <textarea th:field="*{shippingAddress}" rows="3"></textarea>
+                <div th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}" class="text-danger"></div>
             </div>
+            <div>
+                <label>Phương thức thanh toán</label>
+                <input type="text" th:field="*{paymentMethod}" readonly>
+            </div>
+            <button type="submit" class="btn btn-primary">Đặt hàng</button>
         </form>
-
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     </div>
 </div>
+
+<script>
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    function updateTotal() {
+        let total = 0;
+        quantityInputs.forEach(input => {
+            const row = input.closest('tr');
+            const unitPrice = parseFloat(row.dataset.price);
+            const quantity = parseInt(input.value) || 0;
+            row.querySelector('.quantity-hidden').value = quantity;
+            total += unitPrice * quantity;
+        });
+        document.getElementById('totalPrice').textContent = total.toLocaleString('vi-VN') + ' ₫';
+    }
+    quantityInputs.forEach(input => {
+        input.addEventListener('input', updateTotal);
+        input.addEventListener('change', updateTotal);
+    });
+    updateTotal();
+</script>
 </body>
 </html>

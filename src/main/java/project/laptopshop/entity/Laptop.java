@@ -33,7 +33,7 @@ public class Laptop {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "laptop_status", nullable = false)
-    private LaptopStatus laptopStatus = LaptopStatus.Available;
+    private LaptopStatus laptopStatus;
 
     @NotBlank
     @Size(max = 50)

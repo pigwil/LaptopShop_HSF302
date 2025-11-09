@@ -59,12 +59,14 @@ public class LaptopServiceImpl implements LaptopService {
             laptop.setImgPath("/images/default-laptop.png");
         }
 
-        // Chỉ set trạng thái tự động khi tạo mới
-        laptop.setLaptopStatus(
-                laptop.getQuantityInStock() > 0
-                        ? Laptop.LaptopStatus.Available
-                        : Laptop.LaptopStatus.Out_Of_Stock
-        );
+        // Nếu trạng thái không được set thủ công, tự động set theo tồn kho
+        if (laptop.getLaptopStatus() == null) {
+            laptop.setLaptopStatus(
+                    laptop.getQuantityInStock() > 0
+                            ? Laptop.LaptopStatus.Available
+                            : Laptop.LaptopStatus.Out_Of_Stock
+            );
+        }
 
         laptop.setIs_deleted(0);
 
@@ -81,9 +83,9 @@ public class LaptopServiceImpl implements LaptopService {
         laptop.setRamInfo(updatedLaptop.getRamInfo());
         laptop.setPrice(updatedLaptop.getPrice());
         laptop.setQuantityInStock(updatedLaptop.getQuantityInStock());
-
-        // Không ghi đè trạng thái thủ công
-        // Nếu muốn tự động cập nhật theo stock, chỉ dùng một method riêng
+        
+        // Cập nhật trạng thái từ form
+        laptop.setLaptopStatus(updatedLaptop.getLaptopStatus());
 
         if (imageFile != null && !imageFile.isEmpty()) {
             laptop.setImgPath(saveImageFile(imageFile));

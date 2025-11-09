@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import project.laptopshop.entity.Laptop;
 import project.laptopshop.service.LaptopService;
 
@@ -37,5 +38,12 @@ public class HomeController {
         }
 
         return "home";
+    }
+
+    @GetMapping("/product/{id}")
+    public String getProductDetails(@PathVariable Long id, Model model) {
+        Laptop product = laptopService.getLaptopById(id);
+        model.addAttribute("product", product);
+        return "product-details";
     }
 }

@@ -78,34 +78,25 @@ public class CartServiceImpl implements CartService {
 
         if (draftOrder == null) return;
 
-        OrderDetail existing = draftOrder.getOrderDetails()
+        OrderDetail detail = draftOrder.getOrderDetails()
                 .stream()
                 .filter(d -> d.getLaptop().getLaptopCode().equals(laptopCode))
                 .findFirst()
                 .orElse(null);
 
+        if (detail == null) return;
+
         if (quantity <= 0) {
-            if (existing != null) {
-                draftOrder.getOrderDetails().remove(existing);
-                existing.setOrder(null);
-            }
+            draftOrder.getOrderDetails().remove(detail);
+            detail.setOrder(null);
+
+            draftOrder.setOrderStatus(Order.Status.Cancelled);
             return;
         }
-
-        if (existing != null) {
-            existing.setQuantity(quantity);
-            existing.setTotalPrice(existing.getLaptop().getPrice() * quantity);
-            return;
-        }
-
-        OrderDetail newDetail = new OrderDetail();
-        newDetail.setOrder(draftOrder);
-        newDetail.setLaptop(laptopRepository.findByLaptopCode(laptopCode));
-        newDetail.setQuantity(quantity);
-        newDetail.setTotalPrice(newDetail.getLaptop().getPrice() * quantity);
-
-        draftOrder.getOrderDetails().add(newDetail);
+        detail.setQuantity(quantity);
+        detail.setTotalPrice(detail.getLaptop().getPrice() * quantity);
     }
+
 
 
     @Override
@@ -115,6 +106,7 @@ public class CartServiceImpl implements CartService {
 
         Order draftOrder = draftOrders.get(0);
         draftOrder.getOrderDetails().removeIf(d -> d.getLaptop().getLaptopCode().equals(laptopCode));
+
         orderRepository.save(draftOrder);
     }
 

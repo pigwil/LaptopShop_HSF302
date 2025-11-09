@@ -357,9 +357,11 @@
                         
                         <div class="product-actions">
                             <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-details">View Details</a>
-                            <a href="#" class="btn btn-add-cart">Add to Cart</a>
+                            <form th:action="@{/check-out}" method="get" style="display:inline;">
+                                <input type="hidden" name="laptopCode" th:value="${product.laptopCode}">
+                                <button type="submit" class="btn btn-primary">Buy</button>
+                            </form>
                         </div>
-
                         <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">28.990.000₫</div>
                     </div>
                 </div>

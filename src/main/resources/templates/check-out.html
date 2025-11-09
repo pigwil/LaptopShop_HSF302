@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* ==================== ROOT VARIABLES ==================== */
         :root {
             --primary-color: #007bff;
             --secondary-color: #6c757d;
@@ -21,6 +22,7 @@
             --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
         }
 
+        /* ==================== GLOBAL RESET ==================== */
         * {
             margin: 0;
             padding: 0;
@@ -34,12 +36,7 @@
             background-color: var(--body-bg);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-
+        /* ==================== HEADER ==================== */
         .main-header {
             background-color: #fff;
             box-shadow: var(--box-shadow);
@@ -50,6 +47,9 @@
         }
 
         .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -77,18 +77,148 @@
             transition: all 0.3s ease;
         }
 
-        .checkout-container {
+        .user-welcome span {
+            font-weight: 500;
+        }
+
+        /* ==================== CONTAINER ==================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 15px;
+        }
+
+        /* ==================== BREADCRUMB ==================== */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: var(--secondary-color);
+        }
+
+        /* ==================== CHECKOUT LAYOUT ==================== */
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        /* ==================== CHECKOUT MAIN ==================== */
+        .checkout-main {
             background-color: #fff;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            margin: 2rem 0;
             padding: 2rem;
         }
 
         .checkout-title {
-            font-size: 2rem;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        /* ==================== CART ITEMS ==================== */
+        .cart-items {
             margin-bottom: 2rem;
-            color: var(--text-color);
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-info {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .item-price {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.25rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* ==================== FORM STYLES ==================== */
+        .form-section {
+            margin-bottom: 2rem;
         }
 
         .form-group {
@@ -97,61 +227,142 @@
 
         .form-label {
             display: block;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 0.5rem;
+            color: var(--dark-color);
         }
 
         .form-control {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #ced4da;
+            border: 2px solid #e0e0e0;
             border-radius: var(--border-radius);
             font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Roboto', sans-serif;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
         }
 
         .text-danger {
             color: var(--danger-color);
             font-size: 0.875rem;
-            margin-top: 0.25rem;
+            margin-top: 0.5rem;
+            display: block;
         }
 
+        /* ==================== ORDER SUMMARY ==================== */
+        .order-summary {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--light-color);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .summary-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--light-color);
+        }
+
+        .summary-total .summary-label {
+            font-size: 1.25rem;
+            color: var(--dark-color);
+            font-weight: 700;
+        }
+
+        .summary-total .summary-value {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        /* ==================== BUTTONS ==================== */
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 1rem 2rem;
             border: none;
             border-radius: var(--border-radius);
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             color: #fff;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
         }
 
         .btn-secondary {
             background-color: var(--secondary-color);
             color: #fff;
-            margin-left: 1rem;
-        }
-
-        .total-price {
-            font-size: 1.25rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: var(--border-radius);
             margin-top: 1rem;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* ==================== ALERTS ==================== */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .alert-danger {
@@ -159,85 +370,322 @@
             border: 1px solid #f5c6cb;
             color: var(--danger-color);
         }
+
+        /* ==================== FOOTER ==================== */
+        .main-footer {
+            background-color: var(--dark-color);
+            color: #fff;
+            padding: 3rem 0 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            line-height: 2;
+        }
+
+        .footer-section ul li a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #495057;
+            font-size: 0.9rem;
+        }
+
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        @media (max-width: 992px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .checkout-main,
+            .order-summary {
+                padding: 1.5rem;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .checkout-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-<!-- Header -->
+
+<!-- ==================== HEADER ==================== -->
 <header class="main-header">
-    <div class="container">
-        <div class="header-content">
-            <a th:href="@{/}" class="logo">TechWorld</a>
-            <div class="header-actions">
-                <div th:if="${session.user != null}" class="user-welcome">
-                    <span>Xin chào, <strong th:text="${session.user.fullName}">User</strong></span>
-                    <a href="/cart" class="action-btn">🛒 Giỏ hàng</a>
-                    <a th:if="${session.user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
-                       href="/admin/dashboard" class="action-btn">Dashboard</a>
-                    <a href="/logout" class="action-btn">Đăng xuất</a>
-                </div>
+    <div class="header-content">
+        <a th:href="@{/}" class="logo">TechWorld</a>
+        <div class="header-actions">
+            <div th:if="${session.user != null}" class="user-welcome">
+                <span>Xin chào, <strong th:text="${session.user.fullName}">User</strong></span>
+                <a href="/order-history" class="action-btn">🛒 Đơn hàng</a>
+                <a th:if="${session.user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
+                   href="/admin/dashboard" class="action-btn">Dashboard</a>
+                <a href="/logout" class="action-btn">Đăng xuất</a>
             </div>
         </div>
     </div>
 </header>
 
-<div class="container">
-    <div class="checkout-container">
-        <h1 class="checkout-title">Đặt hàng</h1>
-        <form th:action="@{/check-out}" method="post" th:object="${checkoutDTO}">
-            <table>
-                <thead>
-                <tr>
-                    <th>Laptop</th>
-                    <th>Số lượng</th>
-                    <th>Đơn giá</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="item, iterStat : ${cartItems}" th:data-price="${item.price}">
-                    <td th:text="${item.laptopName}"></td>
-                    <td>
-                        <input type="number" class="quantity-input" min="1"
-                               th:value="${item.quantity}" style="width:60px;">
-                    </td>
-                    <td class="item-price" th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' ₫'"></td>
-                    <input type="hidden" name="laptopCodes" th:value="${item.laptopCode}">
-                    <input type="hidden" class="quantity-hidden" name="quantities" th:value="${item.quantity}">
-                </tr>
-                </tbody>
-            </table>
-            <p>Tổng tiền: <span id="totalPrice" th:text="${#numbers.formatDecimal(totalPrice,0,'COMMA',0,'POINT')} + ' ₫'"></span></p>
-            <div>
-                <label>Địa chỉ giao hàng</label>
-                <textarea th:field="*{shippingAddress}" rows="3"></textarea>
-                <div th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}" class="text-danger"></div>
-            </div>
-            <div>
-                <label>Phương thức thanh toán</label>
-                <input type="text" th:field="*{paymentMethod}" readonly>
-            </div>
-            <button type="submit" class="btn btn-primary">Đặt hàng</button>
-        </form>
-        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-    </div>
-</div>
+<!-- ==================== MAIN CONTENT ==================== -->
+<main>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="/">Trang chủ</a>
+            <span>›</span>
+            <span>Đặt hàng</span>
+        </nav>
 
+        <!-- Alert -->
+        <div th:if="${error}" class="alert alert-danger">
+            <span>⚠️</span>
+            <span th:text="${error}">Error message</span>
+        </div>
+
+        <!-- Checkout Layout -->
+        <div class="checkout-layout">
+            <!-- Main Checkout Form -->
+            <div class="checkout-main">
+                <h1 class="checkout-title">🛒 Thanh toán</h1>
+
+                <form th:action="@{/check-out}" method="post" th:object="${checkoutDTO}">
+                    <!-- Cart Items Section -->
+                    <div class="form-section">
+                        <h2 class="section-title">Sản phẩm trong giỏ</h2>
+                        <div class="cart-items">
+                            <div class="cart-item" th:each="item, iterStat : ${cartItems}" th:data-price="${item.price}">
+                                <div class="item-info">
+                                    <div class="item-name" th:text="${item.laptopName}">Dell XPS 13</div>
+                                    <div class="item-price" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</div>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button type="button" class="quantity-btn decrease-btn">−</button>
+                                    <input type="number" class="quantity-input" min="1"
+                                           th:value="${item.quantity}" readonly>
+                                    <button type="button" class="quantity-btn increase-btn">+</button>
+                                </div>
+                                <input type="hidden" name="laptopCodes" th:value="${item.laptopCode}">
+                                <input type="hidden" class="quantity-hidden" name="quantities" th:value="${item.quantity}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Information -->
+                    <div class="form-section">
+                        <h2 class="section-title">Thông tin giao hàng</h2>
+                        <div class="form-group">
+                            <label class="form-label" for="shippingAddress">Địa chỉ giao hàng *</label>
+                            <textarea class="form-control"
+                                      id="shippingAddress"
+                                      th:field="*{shippingAddress}"
+                                      rows="3"
+                                      placeholder="Nhập địa chỉ giao hàng của bạn..."></textarea>
+                            <span th:if="${#fields.hasErrors('shippingAddress')}"
+                                  th:errors="*{shippingAddress}"
+                                  class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="form-section">
+                        <h2 class="section-title">Phương thức thanh toán</h2>
+                        <div class="form-group">
+                            <label class="form-label" for="paymentMethod">Phương thức</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="paymentMethod"
+                                   th:field="*{paymentMethod}"
+                                   readonly>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button (Mobile) -->
+                    <button type="submit" class="btn btn-primary" style="display: none;" id="mobile-submit">
+                        💳 Đặt hàng ngay
+                    </button>
+                </form>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <aside class="order-summary">
+                <h2 class="summary-title">Tóm tắt đơn hàng</h2>
+
+                <div class="summary-row">
+                    <span class="summary-label">Tạm tính:</span>
+                    <span class="summary-value" id="subtotal">0 ₫</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Phí vận chuyển:</span>
+                    <span class="summary-value">Miễn phí</span>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span class="summary-label">Tổng cộng:</span>
+                    <span class="summary-value" id="totalPrice" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</span>
+                </div>
+
+                <button type="submit" form="checkoutForm" class="btn btn-primary" onclick="document.querySelector('form').submit();">
+                    💳 Đặt hàng ngay
+                </button>
+
+                <a href="/" class="btn btn-secondary">
+                    ← Tiếp tục mua sắm
+                </a>
+            </aside>
+        </div>
+    </div>
+</main>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Về TechWorld</h4>
+            <ul>
+                <li><a href="#">Giới thiệu</a></li>
+                <li><a href="#">Tuyển dụng</a></li>
+                <li><a href="#">Hệ thống cửa hàng</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Hỗ Trợ Khách Hàng</h4>
+            <ul>
+                <li><a href="#">Chính sách bảo hành</a></li>
+                <li><a href="#">Chính sách đổi trả</a></li>
+                <li><a href="#">Hướng dẫn mua hàng</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Tổng Đài Hỗ Trợ</h4>
+            <ul>
+                <li><a href="#">Gọi mua hàng: 1800.1234</a></li>
+                <li><a href="#">Khiếu nại: 1800.5678</a></li>
+                <li><a href="#">Bảo hành: 1800.9101</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Kết Nối Với Chúng Tôi</h4>
+            <a href="#" style="margin-right: 10px; color: white; font-size: 1.5rem;">FB</a>
+            <a href="#" style="margin-right: 10px; color: white; font-size: 1.5rem;">YT</a>
+            <a href="#" style="color: white; font-size: 1.5rem;">TIK</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> TechWorld. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<!-- ==================== JAVASCRIPT ==================== -->
 <script>
-    const quantityInputs = document.querySelectorAll('.quantity-input');
+    // Get all cart items
+    const cartItems = document.querySelectorAll('.cart-item');
+
     function updateTotal() {
         let total = 0;
-        quantityInputs.forEach(input => {
-            const row = input.closest('tr');
-            const unitPrice = parseFloat(row.dataset.price);
-            const quantity = parseInt(input.value) || 0;
-            row.querySelector('.quantity-hidden').value = quantity;
+
+        cartItems.forEach(item => {
+            const unitPrice = parseFloat(item.dataset.price);
+            const quantityInput = item.querySelector('.quantity-input');
+            const quantityHidden = item.querySelector('.quantity-hidden');
+            const quantity = parseInt(quantityInput.value) || 1;
+
+            // Update hidden input
+            quantityHidden.value = quantity;
+
+            // Calculate total
             total += unitPrice * quantity;
         });
-        document.getElementById('totalPrice').textContent = total.toLocaleString('vi-VN') + ' ₫';
+
+        // Update display
+        const formattedTotal = total.toLocaleString('vi-VN') + ' ₫';
+        document.getElementById('totalPrice').textContent = formattedTotal;
+        document.getElementById('subtotal').textContent = formattedTotal;
     }
-    quantityInputs.forEach(input => {
-        input.addEventListener('input', updateTotal);
-        input.addEventListener('change', updateTotal);
+
+    // Handle quantity buttons
+    cartItems.forEach(item => {
+        const decreaseBtn = item.querySelector('.decrease-btn');
+        const increaseBtn = item.querySelector('.increase-btn');
+        const quantityInput = item.querySelector('.quantity-input');
+
+        decreaseBtn.addEventListener('click', () => {
+            let value = parseInt(quantityInput.value);
+            if (value > 1) {
+                quantityInput.value = value - 1;
+                updateTotal();
+            }
+        });
+
+        increaseBtn.addEventListener('click', () => {
+            let value = parseInt(quantityInput.value);
+            quantityInput.value = value + 1;
+            updateTotal();
+        });
+
+        quantityInput.addEventListener('change', updateTotal);
     });
+
+    // Show mobile submit button on smaller screens
+    function handleResponsiveButtons() {
+        const mobileSubmit = document.getElementById('mobile-submit');
+        if (window.innerWidth <= 992) {
+            mobileSubmit.style.display = 'flex';
+        } else {
+            mobileSubmit.style.display = 'none';
+        }
+    }
+
+    window.addEventListener('resize', handleResponsiveButtons);
+    handleResponsiveButtons();
+
+    // Initial calculation
     updateTotal();
 </script>
 </body>

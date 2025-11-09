@@ -463,7 +463,7 @@
         <div class="header-actions">
             <div th:if="${session.user != null}" class="user-welcome">
                 <span>Xin chào, <strong th:text="${session.user.fullName}">User</strong></span>
-                <a href="/order-history" class="action-btn">🛒 Đơn hàng</a>
+                <a href="/order-history" class="action-btn">🛒 Lịch sử đơn hàng</a>
                 <a th:if="${session.user.role == T(project.laptopshop.entity.User.Role).ADMIN}"
                    href="/admin/dashboard" class="action-btn">Dashboard</a>
                 <a href="/logout" class="action-btn">Đăng xuất</a>

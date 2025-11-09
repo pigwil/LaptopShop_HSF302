@@ -50,6 +50,9 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
 
+    public Order(Long userId, Status status) {
+    }
+
     @Transient
     public double getTotalAmount() {
         double total = 0.0;
@@ -66,6 +69,6 @@ public class Order {
         Confirmed,
         Cancelled,
         Delivered,
-        Return,
+        Return
     }
 }

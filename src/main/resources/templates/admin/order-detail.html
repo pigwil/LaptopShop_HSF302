@@ -71,19 +71,30 @@
         </div>
 
         <div class="card">
-            <h3>Update Status</h3>
-            <form th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}" method="post" class="status-form">
-                <label for="status">Change status to:</label>
-                <select id="status" name="status">
-                    <option th:each="st : ${T(project.laptopshop.entity.Order.Status).values()}"
-                            th:if="${st.name() != 'Draft'}"
-                            th:value="${st}"
-                            th:text="${st}"
-                            th:selected="${st == order.orderStatus}">
-                    </option>
-                </select>
-                <button type="submit">Update</button>
-            </form>
+            <div th:if="${order.orderStatus != T(project.laptopshop.entity.Order.Status).Cancelled}">
+                <h3>Update Status</h3>
+                <form th:action="@{'/admin/orders/' + ${order.id} + '/update-status'}" method="post" class="status-form">
+                    <label for="status">Change status to:</label>
+                    <select id="status" name="status">
+                        <option th:each="st : ${T(project.laptopshop.entity.Order.Status).values()}"
+                                th:if="${st.name() != 'Draft'}"
+                                th:value="${st}"
+                                th:text="${st}"
+                                th:selected="${st == order.orderStatus}">
+                        </option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </div>
+
+            <div th:if="${order.orderStatus == T(project.laptopshop.entity.Order.Status).Cancelled}">
+                <h3>Update Status</h3>
+                <div class="status-form" style="padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px;">
+                    <p style="color: #721c24; font-weight: bold; margin: 0;">
+                        Đơn hàng này đã bị hủy, không thể cập nhật trạng thái.
+                    </p>
+                </div>
+            </div>
 
             <h3>Product Details</h3>
             <table class="product-table">

@@ -33,6 +33,12 @@ public class OrderDetail {
     @Column(name = "unit_price", nullable = false)
     private double unitPrice;
 
+    @Column(name = "total_price", nullable = false)
+    private double totalPrice;
+
+    public OrderDetail(Order draftOrder, Laptop laptop, @Positive double price, Integer quantity) {
+    }
+
     @Transient
     public double getTotalPrice() {
         return unitPrice * quantity;

@@ -353,20 +353,36 @@
                             <span th:if="${product.imgPath == null}" style="font-size: 4rem;">💻</span>
                         </a>
                     </div>
-                    <div class="product-info">
-                        <div class="product-brand" th:text="${product.brand}">Thương hiệu</div>
-                        <h3 class="product-name" th:text="${product.laptopName}">Tên Laptop</h3>
-                        <p class="product-specs" th:text="${product.cpuInfo + ' / ' + product.ramInfo}">Thông số kỹ thuật</p>
-                        
-                        <div class="product-actions">
-                            <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-details">View Details</a>
-                            <form th:action="@{/check-out}" method="get" style="display:inline;">
-                                <input type="hidden" name="laptopCode" th:value="${product.laptopCode}">
-                                <button type="submit" class="btn btn-primary">Buy</button>
-                            </form>
-                        </div>
-                        <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">28.990.000₫</div>
+                    <div class="product-actions">
+
+                        <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-details">View Details</a>
+
+                        <form th:action="@{/check-out}" method="get" style="display:inline;">
+                            <input type="hidden" name="laptopCode" th:value="${product.laptopCode}">
+
+                            <!-- Nếu hết hàng thì disable nút -->
+                            <button type="submit"
+                                    class="btn btn-primary"
+                                    th:disabled="${product.quantityInStock == 0
+                              || product.laptopStatus == T(project.laptopshop.entity.Laptop.LaptopStatus).Out_Of_Stock}">
+                                Buy
+                            </button>
+                        </form>
+
                     </div>
+
+                    <!-- Giá + thông báo trạng thái -->
+                    <div class="product-price">
+                        <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+
+                        <!-- Nếu hết hàng thì hiển thị thông báo -->
+                        <span th:if="${product.quantityInStock == 0
+                  || product.laptopStatus == T(project.laptopshop.entity.Laptop.LaptopStatus).Out_Of_Stock}"
+                              style="color: red; font-size: 0.9rem; margin-left: 10px;">
+        (Hết hàng)
+    </span>
+                    </div>
+
                 </div>
             </div>
         </div>

@@ -180,11 +180,9 @@
     </div>
 </header>
 
-<!-- Checkout Content -->
 <div class="container">
     <div class="checkout-container">
         <h1 class="checkout-title">Đặt hàng</h1>
-        <!-- Form đặt hàng -->
         <form th:action="@{/check-out}" method="post" th:object="${checkoutDTO}">
             <table>
                 <thead>
@@ -202,64 +200,45 @@
                                th:value="${item.quantity}" style="width:60px;">
                     </td>
                     <td class="item-price" th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + ' ₫'"></td>
-
-                    <!-- Hidden fields để POST -->
                     <input type="hidden" name="laptopCodes" th:value="${item.laptopCode}">
                     <input type="hidden" class="quantity-hidden" name="quantities" th:value="${item.quantity}">
                 </tr>
                 </tbody>
             </table>
-
             <p>Tổng tiền: <span id="totalPrice" th:text="${#numbers.formatDecimal(totalPrice,0,'COMMA',0,'POINT')} + ' ₫'"></span></p>
-
             <div>
                 <label>Địa chỉ giao hàng</label>
                 <textarea th:field="*{shippingAddress}" rows="3"></textarea>
                 <div th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}" class="text-danger"></div>
             </div>
-
             <div>
                 <label>Phương thức thanh toán</label>
                 <input type="text" th:field="*{paymentMethod}" readonly>
             </div>
-
             <button type="submit" class="btn btn-primary">Đặt hàng</button>
         </form>
-
-        <!-- Hiển thị lỗi chung -->
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     </div>
 </div>
+
 <script>
     const quantityInputs = document.querySelectorAll('.quantity-input');
-
     function updateTotal() {
         let total = 0;
         quantityInputs.forEach(input => {
             const row = input.closest('tr');
             const unitPrice = parseFloat(row.dataset.price);
             const quantity = parseInt(input.value) || 0;
-
-            // Cập nhật hidden input để submit
             row.querySelector('.quantity-hidden').value = quantity;
-
-            // Cộng dồn vào tổng tiền
             total += unitPrice * quantity;
         });
-
-        // Cập nhật tổng tiền
         document.getElementById('totalPrice').textContent = total.toLocaleString('vi-VN') + ' ₫';
     }
-
-    // Gắn sự kiện input
     quantityInputs.forEach(input => {
         input.addEventListener('input', updateTotal);
-        input.addEventListener('change', updateTotal); // dự phòng
+        input.addEventListener('change', updateTotal);
     });
-
-    // Khởi tạo khi load page
     updateTotal();
 </script>
-
 </body>
 </html>

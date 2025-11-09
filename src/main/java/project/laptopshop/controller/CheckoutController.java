@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 @Controller
 public class CheckoutController {
     @Autowired
-    private CartService cartService;
-    @Autowired
     private OrderRepository orderRepository;
     @Autowired
     LaptopRepository laptopRepository;
@@ -41,26 +39,18 @@ public class CheckoutController {
                                HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
-
-        // Lấy laptop từ DB
         Laptop laptop = laptopRepository.findByLaptopCode(laptopCode);
         if (laptop == null) {
             throw new RuntimeException("Không tìm thấy laptop");
         }
-
-        // Tạo CartItem tạm thời để hiển thị trên checkout
         CartItemDTO item = new CartItemDTO();
         item.setLaptopCode(laptop.getLaptopCode());
         item.setLaptopName(laptop.getLaptopName());
-        item.setQuantity(1); // default 1
-        item.setPrice(laptop.getPrice()); // price cho 1 chiếc
-
+        item.setQuantity(1);
+        item.setPrice(laptop.getPrice());
         model.addAttribute("cartItems", List.of(item));
-
-        // Tính tổng tiền
         model.addAttribute("totalPrice", item.getPrice());
 
-        // CheckoutDTO mặc định
         CheckoutDTO checkoutDTO = new CheckoutDTO();
         checkoutDTO.setPaymentMethod("COD");
         model.addAttribute("checkoutDTO", checkoutDTO);
@@ -94,15 +84,53 @@ public class CheckoutController {
             OrderDetail detail = new OrderDetail();
             detail.setLaptop(laptop);
             detail.setQuantity(quantities.get(i));
+            detail.setUnitPrice(laptop.getPrice());
             detail.setTotalPrice(laptop.getPrice() * quantities.get(i));
             detail.setOrder(order);
+
             details.add(detail);
         }
+
 
         order.setOrderDetails(details);
         orderRepository.save(order);
 
         return "redirect:/home";
+    }
+    @GetMapping("/order-history")
+    public String viewOrderHistory(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        List<Order> orders = orderRepository.findByCreatedByIdAndOrderStatusIn(
+                user.getId(),
+                List.of(Order.Status.Confirmed, Order.Status.Delivered)
+        );
+
+        model.addAttribute("orders", orders);
+        return "order-history";
+    }
+
+    @PostMapping("/order-history/cancel")
+    public String cancelOrder(@RequestParam Long orderId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
+
+        // Kiểm tra quyền của user
+        if (!order.getCreatedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("Bạn không có quyền chỉnh sửa đơn này");
+        }
+
+        // Cập nhật trạng thái
+        if (order.getOrderStatus() == Order.Status.Confirmed) {
+            order.setOrderStatus(Order.Status.Cancelled);
+        }
+
+        orderRepository.save(order);
+        return "redirect:/order-history";
     }
 
 }

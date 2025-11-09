@@ -483,7 +483,7 @@
             <div class="product-image-section">
                 <div class="product-image-main">
                     <img th:if="${product.imgPath != null}"
-                         th:src="@{${product.imgPath}}"
+                         th:src="@{'/img/' + ${product.imgPath}}"
                          th:alt="${product.laptopName}">
                     <span th:if="${product.imgPath == null}" style="font-size: 6rem;">💻</span>
                 </div>

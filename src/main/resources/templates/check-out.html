@@ -506,9 +506,13 @@
                                 </div>
                                 <div class="quantity-controls">
                                     <button type="button" class="quantity-btn decrease-btn">−</button>
-                                    <input type="number" class="quantity-input" min="1"
-                                           th:value="${item.quantity}" readonly>
+                                    <input type="number" class="quantity-input"
+                                           min="1"
+                                           th:max="${item.quantityInStock}"
+                                           th:value="${item.quantity}"
+                                           readonly>
                                     <button type="button" class="quantity-btn increase-btn">+</button>
+                                    <input type="hidden" class="stock-value" th:value="${item.quantityInStock}">
                                 </div>
                                 <input type="hidden" name="laptopCodes" th:value="${item.laptopCode}">
                                 <input type="hidden" class="quantity-hidden" name="quantities" th:value="${item.quantity}">
@@ -568,7 +572,7 @@
 
                 <div class="summary-row summary-total">
                     <span class="summary-label">Tổng cộng:</span>
-                    <span class="summary-value" id="totalPrice" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000,000 ₫</span>
+                    <span class="summary-value" id="totalPrice" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
                 </div>
 
                 <button type="submit" form="checkoutForm" class="btn btn-primary" onclick="document.querySelector('form').submit();">
@@ -624,69 +628,67 @@
 
 <!-- ==================== JAVASCRIPT ==================== -->
 <script>
-    // Get all cart items
-    const cartItems = document.querySelectorAll('.cart-item');
+    document.addEventListener("DOMContentLoaded", function () {
 
-    function updateTotal() {
-        let total = 0;
+        const cartItems = document.querySelectorAll('.cart-item');
+
+        function updateTotal() {
+            let total = 0;
+            cartItems.forEach(item => {
+                const unitPrice = parseFloat(item.dataset.price);
+                const quantityInput = item.querySelector('.quantity-input');
+                const quantityHidden = item.querySelector('.quantity-hidden');
+                const quantity = parseInt(quantityInput.value) || 1;
+
+                quantityHidden.value = quantity;
+                total += unitPrice * quantity;
+            });
+
+            const formattedTotal = total.toLocaleString('vi-VN') + ' ₫';
+            document.getElementById('totalPrice').textContent = formattedTotal;
+            document.getElementById('subtotal').textContent = formattedTotal;
+        }
 
         cartItems.forEach(item => {
-            const unitPrice = parseFloat(item.dataset.price);
+            const decreaseBtn = item.querySelector('.decrease-btn');
+            const increaseBtn = item.querySelector('.increase-btn');
             const quantityInput = item.querySelector('.quantity-input');
-            const quantityHidden = item.querySelector('.quantity-hidden');
-            const quantity = parseInt(quantityInput.value) || 1;
+            const stock = parseInt(item.querySelector('.stock-value').value);
 
-            // Update hidden input
-            quantityHidden.value = quantity;
+            function updateButtonState() {
+                decreaseBtn.disabled = quantityInput.value <= 1;
+                increaseBtn.disabled = quantityInput.value >= stock;
 
-            // Calculate total
-            total += unitPrice * quantity;
-        });
-
-        // Update display
-        const formattedTotal = total.toLocaleString('vi-VN') + ' ₫';
-        document.getElementById('totalPrice').textContent = formattedTotal;
-        document.getElementById('subtotal').textContent = formattedTotal;
-    }
-
-    // Handle quantity buttons
-    cartItems.forEach(item => {
-        const decreaseBtn = item.querySelector('.decrease-btn');
-        const increaseBtn = item.querySelector('.increase-btn');
-        const quantityInput = item.querySelector('.quantity-input');
-
-        decreaseBtn.addEventListener('click', () => {
-            let value = parseInt(quantityInput.value);
-            if (value > 1) {
-                quantityInput.value = value - 1;
-                updateTotal();
+                decreaseBtn.style.opacity = decreaseBtn.disabled ? 0.5 : 1;
+                increaseBtn.style.opacity = increaseBtn.disabled ? 0.5 : 1;
             }
+
+            decreaseBtn.addEventListener('click', () => {
+                let value = parseInt(quantityInput.value);
+                if (value > 1) {
+                    quantityInput.value = value - 1;
+                    updateTotal();
+                    updateButtonState();
+                }
+            });
+
+            increaseBtn.addEventListener('click', () => {
+                let value = parseInt(quantityInput.value);
+                if (value < stock) {
+                    quantityInput.value = value + 1;
+                    updateTotal();
+                    updateButtonState();
+                }
+            });
+
+            // Cập nhật trạng thái ban đầu
+            updateButtonState();
         });
 
-        increaseBtn.addEventListener('click', () => {
-            let value = parseInt(quantityInput.value);
-            quantityInput.value = value + 1;
-            updateTotal();
-        });
+        // Initial total
+        updateTotal();
 
-        quantityInput.addEventListener('change', updateTotal);
     });
-
-    // Show mobile submit button on smaller screens
-    function handleResponsiveButtons() {
-        const mobileSubmit = document.getElementById('mobile-submit');
-        if (window.innerWidth <= 992) {
-            mobileSubmit.style.display = 'flex';
-        } else {
-            mobileSubmit.style.display = 'none';
-        }
-    }
-
-    window.addEventListener('resize', handleResponsiveButtons);
-    handleResponsiveButtons();
-
-    // Initial calculation
-    updateTotal();
 </script>
 </body>
 </html>

@@ -54,7 +54,7 @@ public class Laptop {
 
     @Min(0)
     @Column(name = "quantity_in_stock", nullable = false)
-    private int quantityInStock; // <-- ĐÃ THÊM TRƯỜNG NÀY
+    private int quantityInStock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

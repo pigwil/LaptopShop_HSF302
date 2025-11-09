@@ -517,7 +517,11 @@
                         <li>
                             <span class="spec-label">Trạng thái:</span>
                             <span class="spec-value">
-                                <span class="product-status" th:text="${product.laptopStatus.toString().replace('_', ' ')}">Available</span>
+                                <span class="product-status"
+                                      th:text="${product.laptopStatus.toString().replace('_', ' ')}"
+                                      th:classappend="${product.laptopStatus.name() == 'Out_Of_Stock'} ? ' out-of-stock'">
+                                    Available
+                                </span>
                             </span>
                         </li>
                     </ul>

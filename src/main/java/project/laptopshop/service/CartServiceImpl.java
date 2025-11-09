@@ -1,5 +1,6 @@
 package project.laptopshop.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.laptopshop.dto.CartItemDTO;
@@ -67,19 +68,45 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public void updateCart(String laptopCode, Integer quantity, Long userId) {
-        List<Order> draftOrders = orderRepository.findByCreatedByIdAndOrderStatus(userId, Order.Status.Draft);
-        if (draftOrders.isEmpty()) return;
+        Order draftOrder = orderRepository
+                .findByCreatedByIdAndOrderStatus(userId, Order.Status.Draft)
+                .stream()
+                .findFirst()
+                .orElse(null);
 
-        Order draftOrder = draftOrders.get(0);
-        draftOrder.getOrderDetails().removeIf(d -> d.getLaptop().getLaptopCode().equals(laptopCode));
+        if (draftOrder == null) return;
 
-        if (quantity > 0) {
-            addToCart(laptopCode, quantity, userId);
-        } else {
-            orderRepository.save(draftOrder);
+        OrderDetail existing = draftOrder.getOrderDetails()
+                .stream()
+                .filter(d -> d.getLaptop().getLaptopCode().equals(laptopCode))
+                .findFirst()
+                .orElse(null);
+
+        if (quantity <= 0) {
+            if (existing != null) {
+                draftOrder.getOrderDetails().remove(existing);
+                existing.setOrder(null);
+            }
+            return;
         }
+
+        if (existing != null) {
+            existing.setQuantity(quantity);
+            existing.setTotalPrice(existing.getLaptop().getPrice() * quantity);
+            return;
+        }
+
+        OrderDetail newDetail = new OrderDetail();
+        newDetail.setOrder(draftOrder);
+        newDetail.setLaptop(laptopRepository.findByLaptopCode(laptopCode));
+        newDetail.setQuantity(quantity);
+        newDetail.setTotalPrice(newDetail.getLaptop().getPrice() * quantity);
+
+        draftOrder.getOrderDetails().add(newDetail);
     }
+
 
     @Override
     public void removeFromCart(String laptopCode, Long userId) {

@@ -43,7 +43,14 @@ public class HomeController {
     @GetMapping("/product/{id}")
     public String getProductDetails(@PathVariable Long id, Model model) {
         Laptop product = laptopService.getLaptopById(id);
+        if (product.getQuantityInStock() <= 0) {
+            product.setLaptopStatus(Laptop.LaptopStatus.Out_Of_Stock); //
+        } else {
+            product.setLaptopStatus(Laptop.LaptopStatus.Available);
+        }
+
         model.addAttribute("product", product);
         return "product-details";
     }
+
 }

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi"
+      th:replace="~{admin/_layout :: layout('Analytics', ~{::content})}">>
+<body>
+<div th:fragment="content">
+    <section style="margin-bottom: 2rem;">
+        <h2>📈 Top 5 sản phẩm bán chạy nhất</h2>
+        <table border="1" cellpadding="8" cellspacing="0" style="width:100%; background:#fff; border-radius:6px;">
+            <thead style="background:#007bff; color:white;">
+            <tr>
+                <th>Tên sản phẩm</th>
+                <th>Tổng số lượng bán</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${topProducts}">
+                <td th:text="${item[0]}"></td>
+                <td th:text="${item[1]}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>👥 Top 5 khách hàng mua nhiều nhất</h2>
+        <table border="1" cellpadding="8" cellspacing="0" style="width:100%; background:#fff; border-radius:6px;">
+            <thead style="background:#28a745; color:white;">
+            <tr>
+                <th>Tên khách hàng</th>
+                <th>Tổng chi tiêu (VND)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${topCustomers}">
+                <td th:text="${c[0]}"></td>
+                <td th:text="${#numbers.formatDecimal(c[1], 0, 'COMMA', 0, 'POINT')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</body>
+</html>

@@ -38,13 +38,13 @@ public class Order {
     @Column(name = "is_archived")
     private int is_archived;
 
-    @Column(name = "shipping_address")
+    @Column(name = "shipping_address",columnDefinition = "NVARCHAR(100)")
     private String shippingAddress;
 
-    @Column(name = "shipping_Phone")
+    @Column(name = "shipping_Phone",columnDefinition = "NVARCHAR(100)")
     private String shippingPhone;
 
-    @Column(name = "shipping_Name")
+    @Column(name = "shipping_Name", columnDefinition = "NVARCHAR(100)")
     private String shippingName;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

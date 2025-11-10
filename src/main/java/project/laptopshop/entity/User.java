@@ -29,11 +29,11 @@ public class User {
 
     @NotBlank
     @Size(max = 50)
-    @Column(name = "full_name", length = 50, nullable = false)
+    @Column(name = "full_name", columnDefinition = "NVARCHAR(50)", nullable = false)
     private String fullName;
 
     @Size(max = 150)
-    @Column(name = "address", length = 150)
+    @Column(name = "address", columnDefinition = "NVARCHAR(150)")
     private String address;
 
     @Pattern(

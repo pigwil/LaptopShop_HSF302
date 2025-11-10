@@ -28,7 +28,7 @@ public class Laptop {
 
     @NotBlank
     @Size(max = 100)
-    @Column(name = "laptop_name", length = 100, nullable = false)
+    @Column(name = "laptop_name", columnDefinition = "NVARCHAR(100)", nullable = false)
     private String laptopName;
 
     @Enumerated(EnumType.STRING)
@@ -54,7 +54,7 @@ public class Laptop {
 
     @Min(0)
     @Column(name = "quantity_in_stock", nullable = false)
-    private int quantityInStock; // <-- ĐÃ THÊM TRƯỜNG NÀY
+    private int quantityInStock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

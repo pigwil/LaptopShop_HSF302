@@ -39,7 +39,14 @@ public class OrderDetail {
     public OrderDetail(Order draftOrder, Laptop laptop, @Positive double price, Integer quantity) {
     }
 
-    @Transient
+    public OrderDetail(Order order, Laptop laptop, int quantity, double unitPrice, double totalPrice) {
+        this.order = order;
+        this.laptop = laptop;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.totalPrice = unitPrice * quantity;
+    }
+
     public double getTotalPrice() {
         return unitPrice * quantity;
     }

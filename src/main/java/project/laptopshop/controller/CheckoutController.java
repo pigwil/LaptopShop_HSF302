@@ -1,5 +1,6 @@
 package project.laptopshop.controller;
 
+import jakarta.transaction.Transactional;
 import project.laptopshop.dto.CartItemDTO;
 import project.laptopshop.dto.CheckoutDTO;
 import project.laptopshop.entity.Laptop;
@@ -39,17 +40,23 @@ public class CheckoutController {
                                HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
+
         Laptop laptop = laptopRepository.findByLaptopCode(laptopCode);
         if (laptop == null) {
             throw new RuntimeException("Không tìm thấy laptop");
         }
+
+        // Tạo item mô phỏng cart
         CartItemDTO item = new CartItemDTO();
         item.setLaptopCode(laptop.getLaptopCode());
         item.setLaptopName(laptop.getLaptopName());
         item.setQuantity(1);
         item.setPrice(laptop.getPrice());
+        item.setQuantityInStock(laptop.getQuantityInStock()); // ✅ thêm số lượng tồn
+
         model.addAttribute("cartItems", List.of(item));
         model.addAttribute("totalPrice", item.getPrice());
+        model.addAttribute("stock", laptop.getQuantityInStock()); // ✅ truyền riêng nếu cần
 
         CheckoutDTO checkoutDTO = new CheckoutDTO();
         checkoutDTO.setPaymentMethod("COD");
@@ -59,6 +66,7 @@ public class CheckoutController {
     }
 
     @PostMapping("/check-out")
+    @Transactional
     public String submitCheckout(@ModelAttribute CheckoutDTO checkoutDTO,
                                  @RequestParam("laptopCodes") List<String> laptopCodes,
                                  @RequestParam("quantities") List<Integer> quantities,
@@ -81,22 +89,32 @@ public class CheckoutController {
             Laptop laptop = laptopRepository.findByLaptopCode(laptopCodes.get(i));
             if (laptop == null) throw new RuntimeException("Laptop không tồn tại");
 
+            int quantityOrdered = quantities.get(i);
+
+            if (laptop.getQuantityInStock() < quantityOrdered) {
+                throw new RuntimeException("Sản phẩm " + laptop.getLaptopName() + " chỉ còn " + laptop.getQuantityInStock() + " trong kho");
+            }
+            laptop.setQuantityInStock(laptop.getQuantityInStock() - quantityOrdered);
+            laptopRepository.save(laptop);
+
+            // Tạo OrderDetail
             OrderDetail detail = new OrderDetail();
             detail.setLaptop(laptop);
-            detail.setQuantity(quantities.get(i));
+            detail.setQuantity(quantityOrdered);
             detail.setUnitPrice(laptop.getPrice());
-            detail.setTotalPrice(laptop.getPrice() * quantities.get(i));
+            detail.setTotalPrice(laptop.getPrice() * quantityOrdered);
             detail.setOrder(order);
 
             details.add(detail);
         }
-
 
         order.setOrderDetails(details);
         orderRepository.save(order);
 
         return "redirect:/home";
     }
+
+
     @GetMapping("/order-history")
     public String viewOrderHistory(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -112,6 +130,7 @@ public class CheckoutController {
     }
 
     @PostMapping("/order-history/cancel")
+    @Transactional
     public String cancelOrder(@RequestParam Long orderId, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
@@ -119,18 +138,38 @@ public class CheckoutController {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
 
-        // Kiểm tra quyền của user
+        // Kiểm tra user có quyền hủy đơn không
         if (!order.getCreatedBy().getId().equals(user.getId())) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa đơn này");
         }
 
-        // Cập nhật trạng thái
+        // Chỉ cho phép hủy nếu trạng thái chưa giao
         if (order.getOrderStatus() == Order.Status.Confirmed) {
+            for (OrderDetail detail : order.getOrderDetails()) {
+                Laptop laptop = detail.getLaptop();
+
+                // Tăng lại số lượng
+                laptop.setQuantityInStock(
+                        laptop.getQuantityInStock() + detail.getQuantity()
+                );
+
+                // Nếu số lượng > 0 thì set lại status
+                if (laptop.getQuantityInStock() > 0 &&
+                        laptop.getLaptopStatus() == Laptop.LaptopStatus.Out_Of_Stock) {
+
+                    laptop.setLaptopStatus(Laptop.LaptopStatus.Available);
+                }
+
+                laptopRepository.save(laptop);
+            }
+
+            // Cập nhật trạng thái đơn
             order.setOrderStatus(Order.Status.Cancelled);
+            orderRepository.save(order);
         }
 
-        orderRepository.save(order);
         return "redirect:/order-history";
     }
+
 
 }
